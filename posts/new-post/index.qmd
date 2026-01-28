@@ -1,0 +1,13 @@
+---
+title: "Sperk"
+author: "Sebastian Montesinos"
+date: "2026-01-28"
+categories: [news, code, analysis]
+image: "image.png"
+---
+
+This is a post with executable code.
+
+```{r}
+1 + 1
+```
