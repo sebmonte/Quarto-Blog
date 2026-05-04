@@ -1,13 +1,86 @@
 ---
-title: "Post With Code"
-author: "Harlow Malloc"
-date: "2026-01-28"
+title: "Final Project - MLM Example"
+author: "Sebastian Montesinos"
+date: "2026-05-10"
 categories: [news, code, analysis]
 image: "image.jpg"
 ---
 
-This is a post with executable code.
+In this study, we were interested in comparing two conditions in a category learning study. In this category learning paradigm, people observed the association between reptiles with differing features and their fertility. Their task was to figure out which of the two features was relevant to fertility, and which was irrelevant. The four stimuli are pictured below:
+
+As you can see, we had two features each with two directions: webbed feet or curved feet, and red or green color. When a feature was relevant, one of the directions would be associated with less fertility, the other with more fertility. However, this association was probabilistic, we would draw how fertile a given reptile was from a normal distribution. The purpose of this was to create noise, such that the irrelevant feature had some association with fertility even though it was not part of the data-generating process.
+
+The key question of our study was as follows: Do participants who are prompted to accommodate observations (i.e., explain them after the fact) and those who are prompted to predict observations (i.e., generate predictions before observations are made) differ in what they learn about these stimuli? 
+
+In the learning by predicting condition, participants learn by seeing one reptile at a time during training, and then estimating how fertile it is (the outcome variable). After each training trial, they receive feedback in the form of how fertile it actually was. In the learning by accommodating condition, participants learn by seeing both the imaginary reptile and how fertile it is, and provide a free response about why it was that fertile. The exact trial order for training is yoked between participants in each condition, in that every unique order of training trials is assigned once to a participant in each condition.
+
+In order to evaluate the differences between these conditions, we used the following measures:
+
+1.  Feature-importance ratings: The ratings of importance that participants assign to each feature. These are captured by a series of questions to participants: a) whether a feature is relevant, b) which value of that feature was positively relevant to fertility, and c) how strongly relevant it was. These are converted to a -7 to 7 scale, where 0 represents that the feature made no difference to the outcome, -7 represents that the feature value made a (strong) negative difference to the outcome, and 7 represents that the feature value made a (strong) positive difference to the outcome
+
+2.  Fertility ratings: The fertility scores assigned to each of four exemplars by participants in the testing phase. These will be measured on a scale from 1-10. There are two features that are modified in the study, each with two possible values, generating the four possible items (2x2).
 
 ```{r}
-1 + 1
+library(tidyverse)  # For reading our CSV
+library(lme4)       # For random effects models
+library(emmeans)    # For pairwise comparisons 
+library(lmerTest)   # For a nice summary for lme4
+
+#Let's load in the cleaned data
+
+df_long <- read_csv('/Users/sm6511/Desktop/Prediction-Accomodation-Exp/Analysis/Study3.0/df_long_for_R.csv') |>
+  mutate(
+    task = relevel(factor(task), ref = "predict"),
+    feature_relevance = relevel(factor(feature_relevance), ref = "irrelevant"),
+    feature_dimension = relevel(factor(feature_dimension), ref = "feet"),
+    color_high = relevel(factor(color_high), ref = "Y"),
+    feet_high = relevel(factor(feet_high), ref = "C")
+  ) #Here I set reference levels for the statistical tests to be used later on.
+df_corr <- read_csv('/Users/sm6511/Desktop/Prediction-Accomodation-Exp/data/Study3.0/Cleaned/df_corr_for_R.csv') |>
+  mutate(
+    task = relevel(factor(task), ref = "predict"),
+    feature_relevance = relevel(factor(feature_relevance), ref = "irrelevant"),
+    feature_dimension = relevel(factor(feature_dimension), ref = "feet"),
+  )
+
+```
+
+```{r}
+model <- lmer(feature_importance ~ task * feature_relevance + 
+                (1|participant), data = df_long)
+summary(model)
+```
+
+textexttext.
+
+```{r}
+isSingular(model)
+VarCorr(model)
+```
+
+texttext.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+df_resid <- df_long %>%
+  group_by(task, feature_relevance) %>%
+  mutate(residuals = feature_importance - mean(feature_importance)) %>% #get residuals
+  ungroup() %>%
+  select(participant, task, feature_relevance, residuals) %>%
+  pivot_wider(
+    id_cols = c(participant, task),
+    names_from = feature_relevance,
+    values_from = residuals
+  )
+
+ggplot(df_resid, aes(x = irrelevant, y = relevant)) +
+  geom_point(alpha = .5) +
+  geom_smooth(method = "lm") + #add line plotting relationship
+  labs(
+    title = "Residuals across ratings of irrelevant and relevant exemplars",
+    x = "Irrelevant rating residual",
+    y = "Relevant rating residual"
+  )
+
 ```
