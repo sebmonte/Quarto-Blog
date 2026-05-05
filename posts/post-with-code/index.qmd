@@ -61,6 +61,13 @@ VarCorr(model)
 texttext.
 
 ```{r}
+df_resid <- df_long %>%
+  group_by(task, feature_relevance) %>%
+  mutate(residuals = feature_importance - mean(feature_importance)) 
+print(df_resid)
+```
+
+```{r}
 library(dplyr)
 library(ggplot2)
 df_resid <- df_long %>%
@@ -79,6 +86,60 @@ ggplot(df_resid, aes(x = irrelevant, y = relevant)) +
   geom_smooth(method = "lm") + #add line plotting relationship
   labs(
     title = "Residuals across ratings of irrelevant and relevant exemplars",
+    x = "Irrelevant rating residual",
+    y = "Relevant rating residual"
+  )
+
+```
+
+```{r}
+library(dplyr)
+
+###First we are going to copy each row, to pretend that participants saw 10x more stimuli
+df_expanded <- df_long %>%
+  slice(rep(1:n(), each = 10)) 
+
+#Now we are 'simulating' different baseline tendencies per participant. So what we have is a vector with some preset baseline tendency for each participant
+set.seed(1)
+participant_offsets <-rnorm(
+  n_distinct(df_expanded$participant), #size of vector = amount of participants
+  mean = 0,
+  sd = 2
+)
+#Now we go back to df_expanded, and we are adding that offset to their data.
+df_expanded <- df_expanded %>%
+  mutate(
+    pid = as.numeric(factor(participant)),
+    feature_importance_sim =
+      feature_importance + participant_offsets[pid] + rnorm(n(), 0, 1)
+  )
+#This just refits the same model as before
+model_sim <- lmer(
+  feature_importance_sim ~ task * feature_relevance + (1 | participant),
+  data = df_expanded
+)
+summary(model_sim)
+
+df_resid <- df_expanded %>%
+  group_by(task, feature_relevance) %>%
+  mutate(residuals = feature_importance_sim - mean(feature_importance_sim)) %>%
+  ungroup() %>%
+  group_by(participant, task, feature_relevance) %>%
+  summarize(
+    mean_residual = mean(residuals),
+    .groups = "drop"
+  ) %>%
+  pivot_wider(
+    id_cols = c(participant, task),
+    names_from = feature_relevance,
+    values_from = mean_residual
+  )
+
+ggplot(df_resid, aes(x = irrelevant, y = relevant)) +
+  geom_point(alpha = .5) +
+  geom_smooth(method = "lm") +
+  labs(
+    title = "Residuals across ratings of irrelevant and relevant exemplars (Simulated data)",
     x = "Irrelevant rating residual",
     y = "Relevant rating residual"
   )

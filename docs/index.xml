@@ -10,10 +10,10 @@
 <atom:link href="https://your-website-url.example.com/index.xml" rel="self" type="application/rss+xml"/>
 <description>A blog built with Quarto</description>
 <generator>quarto-1.8.25</generator>
-<lastBuildDate>Wed, 28 Jan 2026 05:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 10 May 2026 04:00:00 GMT</lastBuildDate>
 <item>
-  <title>Post With Code</title>
-  <dc:creator>Harlow Malloc</dc:creator>
+  <title>Final Project - MLM Example</title>
+  <dc:creator>Sebastian Montesinos</dc:creator>
   <link>https://your-website-url.example.com/posts/post-with-code/</link>
   <description><![CDATA[ 
 
@@ -21,17 +21,420 @@
 
 
 
-<p>This is a post with executable code.</p>
+<p>In this study, we were interested in comparing two conditions in a category learning study. In this category learning paradigm, people observed the association between reptiles with differing features and their fertility. Their task was to figure out which of the two features was relevant to fertility, and which was irrelevant. The four stimuli are pictured below:</p>
+<p>As you can see, we had two features each with two directions: webbed feet or curved feet, and red or green color. When a feature was relevant, one of the directions would be associated with less fertility, the other with more fertility. However, this association was probabilistic, we would draw how fertile a given reptile was from a normal distribution. The purpose of this was to create noise, such that the irrelevant feature had some association with fertility even though it was not part of the data-generating process.</p>
+<p>The key question of our study was as follows: Do participants who are prompted to accommodate observations (i.e., explain them after the fact) and those who are prompted to predict observations (i.e., generate predictions before observations are made) differ in what they learn about these stimuli?&nbsp;</p>
+<p>In the learning by predicting condition, participants learn by seeing one reptile at a time during training, and then estimating how fertile it is (the outcome variable). After each training trial, they receive feedback in the form of how fertile it actually was. In the learning by accommodating condition, participants learn by seeing both the imaginary reptile and how fertile it is, and provide a free response about why it was that fertile. The exact trial order for training is yoked between participants in each condition, in that every unique order of training trials is assigned once to a participant in each condition.</p>
+<p>In order to evaluate the differences between these conditions, we used the following measures:</p>
+<ol type="1">
+<li><p>Feature-importance ratings: The ratings of importance that participants assign to each feature. These are captured by a series of questions to participants: a) whether a feature is relevant, b) which value of that feature was positively relevant to fertility, and c) how strongly relevant it was. These are converted to a -7 to 7 scale, where 0 represents that the feature made no difference to the outcome, -7 represents that the feature value made a (strong) negative difference to the outcome, and 7 represents that the feature value made a (strong) positive difference to the outcome</p></li>
+<li><p>Fertility ratings: The fertility scores assigned to each of four exemplars by participants in the testing phase. These will be measured on a scale from 1-10. There are two features that are modified in the study, each with two possible values, generating the four possible items (2x2).</p></li>
+</ol>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="dv" style="color: #AD0000;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+font-style: inherit;">library</span>(tidyverse)  <span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+font-style: inherit;"># For reading our CSV</span></span></code></pre></div></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.1     ✔ stringr   1.5.2
+✔ ggplot2   4.0.0     ✔ tibble    3.3.0
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.1.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">1</span></span></code></pre></div></div>
+font-style: inherit;">library</span>(lme4)       <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># For random effects models</span></span></code></pre></div></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'lme4' was built under R version 4.5.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Matrix
+
+Attaching package: 'Matrix'
+
+The following objects are masked from 'package:tidyr':
+
+    expand, pack, unpack</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(emmeans)    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># For pairwise comparisons </span></span></code></pre></div></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Welcome to emmeans.
+Caution: You lose important information if you filter this package's results.
+See '? untidy'</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(lmerTest)   <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># For a nice summary for lme4</span></span></code></pre></div></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'lmerTest' was built under R version 4.5.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'lmerTest'
+
+The following object is masked from 'package:lme4':
+
+    lmer
+
+The following object is masked from 'package:stats':
+
+    step</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#Let's load in the cleaned data</span></span>
+<span id="cb11-2"></span>
+<span id="cb11-3">df_long <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_csv</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'/Users/sm6511/Desktop/Prediction-Accomodation-Exp/Analysis/Study3.0/df_long_for_R.csv'</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb11-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb11-5">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">task =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">relevel</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(task), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ref =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"predict"</span>),</span>
+<span id="cb11-6">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">feature_relevance =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">relevel</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(feature_relevance), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ref =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"irrelevant"</span>),</span>
+<span id="cb11-7">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">feature_dimension =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">relevel</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(feature_dimension), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ref =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"feet"</span>),</span>
+<span id="cb11-8">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color_high =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">relevel</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(color_high), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ref =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Y"</span>),</span>
+<span id="cb11-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">feet_high =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">relevel</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(feet_high), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ref =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"C"</span>)</span>
+<span id="cb11-10">  ) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#Here I set reference levels for the statistical tests to be used later on.</span></span></code></pre></div></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 868 Columns: 12
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (8): task, relevant_dim, irrelevant_dim, color_high, feet_high, feet_dis...
+dbl (4): participant, feature_importance, reported_relevant, abs_feature_imp...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1">df_corr <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_csv</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'/Users/sm6511/Desktop/Prediction-Accomodation-Exp/data/Study3.0/Cleaned/df_corr_for_R.csv'</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb13-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb13-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">task =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">relevel</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(task), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ref =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"predict"</span>),</span>
+<span id="cb13-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">feature_relevance =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">relevel</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(feature_relevance), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ref =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"irrelevant"</span>),</span>
+<span id="cb13-5">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">feature_dimension =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">relevel</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(feature_dimension), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ref =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"feet"</span>),</span>
+<span id="cb13-6">  )</span></code></pre></div></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 868 Columns: 8
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (6): participant, task, feature_dimension, high_value, feature_relevance...
+dbl (2): correlation, abs_correlation
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1">model <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lmer</span>(feature_importance <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> task <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> feature_relevance <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb15-2">                (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span>participant), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> df_long)</span></code></pre></div></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>boundary (singular) fit: see help('isSingular')</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(model)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+lmerModLmerTest]
+Formula: feature_importance ~ task * feature_relevance + (1 | participant)
+   Data: df_long
+
+REML criterion at convergence: 4554.5
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.2173 -0.6088 -0.2184  0.8734  1.7731 
+
+Random effects:
+ Groups      Name        Variance Std.Dev.
+ participant (Intercept)  0.00    0.000   
+ Residual                11.12    3.335   
+Number of obs: 868, groups:  participant, 434
+
+Fixed effects:
+                                           Estimate Std. Error        df
+(Intercept)                                 1.08756    0.22636 864.00000
+taskaccommodate                             0.02304    0.32012 864.00000
+feature_relevancerelevant                   1.84793    0.32012 864.00000
+taskaccommodate:feature_relevancerelevant   0.76959    0.45272 864.00000
+                                          t value Pr(&gt;|t|)    
+(Intercept)                                 4.805 1.83e-06 ***
+taskaccommodate                             0.072   0.9426    
+feature_relevancerelevant                   5.773 1.09e-08 ***
+taskaccommodate:feature_relevancerelevant   1.700   0.0895 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) tskccm ftr_rl
+taskaccmmdt -0.707              
+ftr_rlvncrl -0.707  0.500       
+tskccmmdt:_  0.500 -0.707 -0.707
+optimizer (nloptwrap) convergence code: 0 (OK)
+boundary (singular) fit: see help('isSingular')</code></pre>
+</div>
+</div>
+<p>textexttext.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">isSingular</span>(model)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">VarCorr</span>(model)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Groups      Name        Std.Dev.
+ participant (Intercept) 0.0000  
+ Residual                3.3345  </code></pre>
+</div>
+</div>
+<p>texttext.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr)</span>
+<span id="cb23-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb23-3">df_resid <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> df_long <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb23-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(task, feature_relevance) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb23-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">residuals =</span> feature_importance <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(feature_importance)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#get residuals</span></span>
+<span id="cb23-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ungroup</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb23-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(participant, task, feature_relevance, residuals) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb23-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pivot_wider</span>(</span>
+<span id="cb23-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">id_cols =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(participant, task),</span>
+<span id="cb23-10">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">names_from =</span> feature_relevance,</span>
+<span id="cb23-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">values_from =</span> residuals</span>
+<span id="cb23-12">  )</span>
+<span id="cb23-13"></span>
+<span id="cb23-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(df_resid, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> irrelevant, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> relevant)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb23-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> .<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb23-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_smooth</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">method =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"lm"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#add line plotting relationship</span></span>
+<span id="cb23-17">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(</span>
+<span id="cb23-18">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Residuals across ratings of irrelevant and relevant exemplars"</span>,</span>
+<span id="cb23-19">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Irrelevant rating residual"</span>,</span>
+<span id="cb23-20">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Relevant rating residual"</span></span>
+<span id="cb23-21">  )</span></code></pre></div></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://your-website-url.example.com/posts/post-with-code/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 
@@ -42,7 +445,7 @@ font-style: inherit;">1</span></span></code></pre></div></div>
   <category>code</category>
   <category>analysis</category>
   <guid>https://your-website-url.example.com/posts/post-with-code/</guid>
-  <pubDate>Wed, 28 Jan 2026 05:00:00 GMT</pubDate>
+  <pubDate>Sun, 10 May 2026 04:00:00 GMT</pubDate>
   <media:content url="https://your-website-url.example.com/posts/post-with-code/image.jpg" medium="image" type="image/jpeg"/>
 </item>
 <item>

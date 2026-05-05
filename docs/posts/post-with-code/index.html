@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Harlow Malloc">
-<meta name="dcterms.date" content="2026-01-28">
+<meta name="author" content="Sebastian Montesinos">
+<meta name="dcterms.date" content="2026-05-10">
 
-<title>Post With Code – Quarto Blog</title>
+<title>Final Project - MLM Example – Quarto Blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -154,7 +154,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Post With Code</h1>
+      <h1 class="title">Final Project - MLM Example</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">news</div>
                 <div class="quarto-category">code</div>
@@ -169,14 +169,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Author</div>
       <div class="quarto-title-meta-contents">
-               <p>Harlow Malloc </p>
+               <p>Sebastian Montesinos </p>
             </div>
     </div>
       
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">January 28, 2026</p>
+        <p class="date">May 10, 2026</p>
       </div>
     </div>
     
@@ -195,11 +195,194 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<p>This is a post with executable code.</p>
+<p>In this study, we were interested in comparing two conditions in a category learning study. In this category learning paradigm, people observed the association between reptiles with differing features and their fertility. Their task was to figure out which of the two features was relevant to fertility, and which was irrelevant. The four stimuli are pictured below:</p>
+<p>As you can see, we had two features each with two directions: webbed feet or curved feet, and red or green color. When a feature was relevant, one of the directions would be associated with less fertility, the other with more fertility. However, this association was probabilistic, we would draw how fertile a given reptile was from a normal distribution. The purpose of this was to create noise, such that the irrelevant feature had some association with fertility even though it was not part of the data-generating process.</p>
+<p>The key question of our study was as follows: Do participants who are prompted to accommodate observations (i.e., explain them after the fact) and those who are prompted to predict observations (i.e., generate predictions before observations are made) differ in what they learn about these stimuli?&nbsp;</p>
+<p>In the learning by predicting condition, participants learn by seeing one reptile at a time during training, and then estimating how fertile it is (the outcome variable). After each training trial, they receive feedback in the form of how fertile it actually was. In the learning by accommodating condition, participants learn by seeing both the imaginary reptile and how fertile it is, and provide a free response about why it was that fertile. The exact trial order for training is yoked between participants in each condition, in that every unique order of training trials is assigned once to a participant in each condition.</p>
+<p>In order to evaluate the differences between these conditions, we used the following measures:</p>
+<ol type="1">
+<li><p>Feature-importance ratings: The ratings of importance that participants assign to each feature. These are captured by a series of questions to participants: a) whether a feature is relevant, b) which value of that feature was positively relevant to fertility, and c) how strongly relevant it was. These are converted to a -7 to 7 scale, where 0 represents that the feature made no difference to the outcome, -7 represents that the feature value made a (strong) negative difference to the outcome, and 7 represents that the feature value made a (strong) positive difference to the outcome</p></li>
+<li><p>Fertility ratings: The fertility scores assigned to each of four exemplars by participants in the testing phase. These will be measured on a scale from 1-10. There are two features that are modified in the study, each with two possible values, generating the four possible items (2x2).</p></li>
+</ol>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)  <span class="co"># For reading our CSV</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.1     ✔ stringr   1.5.2
+✔ ggplot2   4.0.0     ✔ tibble    3.3.0
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.1.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)       <span class="co"># For random effects models</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'lme4' was built under R version 4.5.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Matrix
+
+Attaching package: 'Matrix'
+
+The following objects are masked from 'package:tidyr':
+
+    expand, pack, unpack</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(emmeans)    <span class="co"># For pairwise comparisons </span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Welcome to emmeans.
+Caution: You lose important information if you filter this package's results.
+See '? untidy'</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmerTest)   <span class="co"># For a nice summary for lme4</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'lmerTest' was built under R version 4.5.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'lmerTest'
+
+The following object is masked from 'package:lme4':
+
+    lmer
+
+The following object is masked from 'package:stats':
+
+    step</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Let's load in the cleaned data</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>df_long <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'/Users/sm6511/Desktop/Prediction-Accomodation-Exp/Analysis/Study3.0/df_long_for_R.csv'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">task =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(task), <span class="at">ref =</span> <span class="st">"predict"</span>),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">feature_relevance =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(feature_relevance), <span class="at">ref =</span> <span class="st">"irrelevant"</span>),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">feature_dimension =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(feature_dimension), <span class="at">ref =</span> <span class="st">"feet"</span>),</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">color_high =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(color_high), <span class="at">ref =</span> <span class="st">"Y"</span>),</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">feet_high =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(feet_high), <span class="at">ref =</span> <span class="st">"C"</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="co">#Here I set reference levels for the statistical tests to be used later on.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 868 Columns: 12
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (8): task, relevant_dim, irrelevant_dim, color_high, feet_high, feet_dis...
+dbl (4): participant, feature_importance, reported_relevant, abs_feature_imp...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df_corr <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'/Users/sm6511/Desktop/Prediction-Accomodation-Exp/data/Study3.0/Cleaned/df_corr_for_R.csv'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">task =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(task), <span class="at">ref =</span> <span class="st">"predict"</span>),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">feature_relevance =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(feature_relevance), <span class="at">ref =</span> <span class="st">"irrelevant"</span>),</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">feature_dimension =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(feature_dimension), <span class="at">ref =</span> <span class="st">"feet"</span>),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 868 Columns: 8
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (6): participant, task, feature_dimension, high_value, feature_relevance...
+dbl (2): correlation, abs_correlation
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lmer</span>(feature_importance <span class="sc">~</span> task <span class="sc">*</span> feature_relevance <span class="sc">+</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>participant), <span class="at">data =</span> df_long)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>boundary (singular) fit: see help('isSingular')</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+lmerModLmerTest]
+Formula: feature_importance ~ task * feature_relevance + (1 | participant)
+   Data: df_long
+
+REML criterion at convergence: 4554.5
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.2173 -0.6088 -0.2184  0.8734  1.7731 
+
+Random effects:
+ Groups      Name        Variance Std.Dev.
+ participant (Intercept)  0.00    0.000   
+ Residual                11.12    3.335   
+Number of obs: 868, groups:  participant, 434
+
+Fixed effects:
+                                           Estimate Std. Error        df
+(Intercept)                                 1.08756    0.22636 864.00000
+taskaccommodate                             0.02304    0.32012 864.00000
+feature_relevancerelevant                   1.84793    0.32012 864.00000
+taskaccommodate:feature_relevancerelevant   0.76959    0.45272 864.00000
+                                          t value Pr(&gt;|t|)    
+(Intercept)                                 4.805 1.83e-06 ***
+taskaccommodate                             0.072   0.9426    
+feature_relevancerelevant                   5.773 1.09e-08 ***
+taskaccommodate:feature_relevancerelevant   1.700   0.0895 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) tskccm ftr_rl
+taskaccmmdt -0.707              
+ftr_rlvncrl -0.707  0.500       
+tskccmmdt:_  0.500 -0.707 -0.707
+optimizer (nloptwrap) convergence code: 0 (OK)
+boundary (singular) fit: see help('isSingular')</code></pre>
+</div>
+</div>
+<p>textexttext.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">isSingular</span>(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VarCorr</span>(model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Groups      Name        Std.Dev.
+ participant (Intercept) 0.0000  
+ Residual                3.3345  </code></pre>
+</div>
+</div>
+<p>texttext.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>df_resid <span class="ot">&lt;-</span> df_long <span class="sc">%&gt;%</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(task, feature_relevance) <span class="sc">%&gt;%</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">residuals =</span> feature_importance <span class="sc">-</span> <span class="fu">mean</span>(feature_importance)) <span class="sc">%&gt;%</span> <span class="co">#get residuals</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(participant, task, feature_relevance, residuals) <span class="sc">%&gt;%</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">id_cols =</span> <span class="fu">c</span>(participant, task),</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> feature_relevance,</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> residuals</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_resid, <span class="fu">aes</span>(<span class="at">x =</span> irrelevant, <span class="at">y =</span> relevant)) <span class="sc">+</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span> <span class="co">#add line plotting relationship</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Residuals across ratings of irrelevant and relevant exemplars"</span>,</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Irrelevant rating residual"</span>,</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Relevant rating residual"</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 
