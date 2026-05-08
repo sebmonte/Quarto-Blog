@@ -10,7 +10,7 @@
 <atom:link href="https://your-website-url.example.com/index.xml" rel="self" type="application/rss+xml"/>
 <description>A blog built with Quarto</description>
 <generator>quarto-1.8.25</generator>
-<lastBuildDate>Sun, 10 May 2026 04:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 08 May 2026 04:00:00 GMT</lastBuildDate>
 <item>
   <title>Final Project - MLM Example</title>
   <dc:creator>Sebastian Montesinos</dc:creator>
@@ -24,8 +24,8 @@
 <p><strong>Final Project</strong>: Evaluating a Mixed Effects Model using Real Data</p>
 <p>In the following post, I will walk through the use of a mixed effects model for data in an experiment on category learning. I will start by explaining the experiment itself, before fitting a model. Finally, I will elaborate on the decision-making process in choosing this model, check assumptions, and see whether there are alternate modeling approaches one should use in this case.</p>
 <p>In the study under consideration, people observed the association between reptiles with differing features and their fertility. Their task was to figure out which of the two features was relevant to fertility, and which was irrelevant. The four stimuli used are pictured below:</p>
-<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 10000px; margin: auto;">
-<p><img src="https://your-website-url.example.com/posts/Project_Post/G_C.png" class="img-fluid" style="width:107.77in"> <img src="https://your-website-url.example.com/posts/Project_Post/G_F.png" width="17.77in"> <img src="https://your-website-url.example.com/posts/Project_Post/Y_C.png" width="17.77in"> <img src="https://your-website-url.example.com/posts/Project_Post/Y_F.png" width="17.77in"></p>
+<div class="{style=&quot;">
+<p>display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; width: 100%; max-width: 900px; margin: 0 auto; “} <img src="https://your-website-url.example.com/posts/Project_Post/G_C.png" style="width: 100% !important; max-width: none !important; height: auto; display: block;"> <img src="https://your-website-url.example.com/posts/Project_Post/G_F.png" style="width: 100% !important; max-width: none !important; height: auto; display: block;"> <img src="https://your-website-url.example.com/posts/Project_Post/Y_C.png" style="width: 100% !important; max-width: none !important; height: auto; display: block;"> <img src="https://your-website-url.example.com/posts/Project_Post/Y_F.png" style="width: 100% !important; max-width: none !important; height: auto; display: block;"></p>
 </div>
 <p>As you can see, we had two features each with two directions: webbed feet or curved feet, and red or green coloring. When a feature was relevant, one of the directions of that feature would be associated with less fertility, the other with more fertility (e.g., red -&gt; higher fertility, green -&gt; lower fertility). However, this association was probabilistic: We would draw how fertile a given reptile was on each trial from a normal distribution. The purpose of this was to create noise, such that the irrelevant feature had some association with fertility even though it was not part of the data-generating process.</p>
 <p>The key question of our study was as follows: Do participants who are prompted to accommodate observations (i.e., explain them after the fact) and those who are prompted to predict observations (i.e., generate predictions before observations are made) differ in what they learn about these stimuli?&nbsp;</p>
@@ -1036,7 +1036,7 @@ font-style: inherit;">data =</span> df_long</span>
   <category>code</category>
   <category>analysis</category>
   <guid>https://your-website-url.example.com/posts/Project_Post/</guid>
-  <pubDate>Sun, 10 May 2026 04:00:00 GMT</pubDate>
+  <pubDate>Fri, 08 May 2026 04:00:00 GMT</pubDate>
   <media:content url="https://your-website-url.example.com/posts/Project_Post/image.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
