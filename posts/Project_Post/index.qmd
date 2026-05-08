@@ -13,7 +13,7 @@ In the following post, I will walk through the use of a mixed effects model for 
 In the study under consideration, people observed the association between reptiles with differing features and their fertility. Their task was to figure out which of the two features was relevant to fertility, and which was irrelevant. The four stimuli used are pictured below:
 
 ::: {style="display:grid; grid-template-columns: repeat(2, 1fr); gap:20px; max-width:900px; margin:auto;"}
-<img src="G_C.png" style="width:100%; border:3px solid red;"/> <img src="G_F.png" style="width:100%; border:3px solid red;"/> <img src="Y_C.png" style="width:100%; border:3px solid red;"/> <img src="Y_F.png" style="width:100%; border:3px solid red;"/>
+<img src="G_C.png" style="width:100%;"/> <img src="G_F.png" style="width:100%;"/> <img src="Y_C.png" style="width:100%;"/> <img src="Y_F.png" style="width:100%;"/>
 :::
 
 As you can see, we had two features each with two directions: webbed feet or curved feet, and red or green coloring. When a feature was relevant, one of the directions of that feature would be associated with less fertility, the other with more fertility (e.g., red -\> higher fertility, green -\> lower fertility). However, this association was probabilistic: We would draw how fertile a given reptile was on each trial from a normal distribution. The purpose of this was to create noise, such that the irrelevant feature had some association with fertility even though it was not part of the data-generating process.
