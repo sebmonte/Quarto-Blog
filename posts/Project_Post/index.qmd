@@ -12,7 +12,7 @@ In the following post, I will walk through the use of a mixed effects model for 
 
 In the study under consideration, people observed the association between reptiles with differing features and their fertility. Their task was to figure out which of the two features was relevant to fertility, and which was irrelevant. The four stimuli used are pictured below:
 
-::: {style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 700px; margin: auto;"}
+::: {style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 10000px; margin: auto;"}
 <img src="G_C.png" width="17.77in"/> <img src="G_F.png" width="17.77in"/> <img src="Y_C.png" width="17.77in"/> <img src="Y_F.png" width="17.77in"/>
 :::
 
