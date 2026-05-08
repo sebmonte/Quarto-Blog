@@ -2,13 +2,21 @@
 title: "Final Project - MLM Example"
 author: "Sebastian Montesinos"
 date: "2026-05-10"
-categories: [news, code, analysis]
+categories: [code, analysis]
 image: "image.jpg"
 ---
 
-In this study, we were interested in comparing two conditions in a category learning study. In the category learning paradigm, people observed the association between reptiles with differing features and their fertility. Their task was to figure out which of the two features was relevant to fertility, and which was irrelevant. The four stimuli used are pictured below:
+**Final Project**: Evaluating a Mixed Effects Model using Real Data
 
-As you can see, we had two features each with two directions: webbed feet or curved feet, and red or green coloring. When a feature was relevant, one of the directions would be associated with less fertility, the other with more fertility. However, this association was probabilistic: We draw how fertile a given reptile was on each trial from a normal distribution. The purpose of this was to create noise, such that the irrelevant feature had some association with fertility even though it was not part of the data-generating process.
+In the following post, I will walk through the use of a mixed effects model for data in an experiment on category learning. I will start by explaining the experiment itself, before fitting a model. Finally, I will elaborate on the decision-making process in choosing this model, check assumptions, and see whether there are alternate modeling approaches one should use in this case.
+
+In the study under consideration, people observed the association between reptiles with differing features and their fertility. Their task was to figure out which of the two features was relevant to fertility, and which was irrelevant. The four stimuli used are pictured below:
+
+::: {.grid layout-ncol="2"}
+![](G_C.png){width="100%"} ![](G_F.png){width="100%"} ![](Y_C.png){width="100%"} ![](Y_F.png){width="100%"}
+:::
+
+As you can see, we had two features each with two directions: webbed feet or curved feet, and red or green coloring. When a feature was relevant, one of the directions would be associated with less fertility, the other with more fertility. However, this association was probabilistic: We would draw how fertile a given reptile was on each trial from a normal distribution. The purpose of this was to create noise, such that the irrelevant feature had some association with fertility even though it was not part of the data-generating process.
 
 The key question of our study was as follows: Do participants who are prompted to accommodate observations (i.e., explain them after the fact) and those who are prompted to predict observations (i.e., generate predictions before observations are made) differ in what they learn about these stimuli? 
 
@@ -18,7 +26,7 @@ In order to evaluate the differences between these conditions, we used the follo
 
 1.  Feature-importance ratings: The ratings of importance that participants assign to each feature. These are captured by a series of questions to participants: a) whether a feature is relevant, b) which value of that feature was positively relevant to fertility, and c) how strongly relevant it was. These are converted to a -7 to 7 scale, where 0 represents that the feature made no difference to the outcome, -7 represents that the feature value made a (strong) negative difference to the outcome, and 7 represents that the feature value made a (strong) positive difference to the outcome
 
-We ended up using two measures of feature importance. The first was the measure above from -7 to 7, whereas the second was one that captured the *absolute value* of feature importance. The theoretical reason for this is that we suspected there were two ways in which accommodators might differ: first, they might overfit in that they systematically get the direction of the irrelevant feature right (overfitting and latching onto noise), or they just inflate the importance of the irrelevant feature, *irrespective* of whether they picked up on the noise. The former measure is captured by the feature importance ratings, the latter by their absolute value.
+We ended up using two measures of feature importance. The first was the measure above from -7 to 7, whereas the second was one that captured the *absolute value* of feature importance. The theoretical reason for this is that we suspected there were two ways in which accommodators might differ: first, they might overfit in that they systematically get the direction of the irrelevant feature right (overfitting and latching onto noise), or perhaps they just inflate the importance of the irrelevant feature, *irrespective* of whether they picked up on the noise. The former measure is captured by the feature importance ratings, the latter by their absolute value.
 
 This brings us to the topic of what sort of model we ought to use to evaluate differences between participants. Generally, we were interested in whether there were main effects or interactions involving condition. As I mentioned, were especially interested in whether accommodators assign higher importance scores to irrelevant features than predictors.
 
@@ -32,7 +40,7 @@ What sort of model should we use to evaluate this data? One option would be to u
 
 4.  Normality of residuals: the residuals follow a normal distribution
 
-I have highlighted the second assumption for an important reason. Note that in this study, this assumption is violated: we know that the probability of the data taking on a value is not independent from all other values, because the same person will make multiple judgments in this study. They provide two feature importance ratings, one for each stimulus, and they provide four ratings of the average fertility of each exemplar.
+I have highlighted the second assumption for an important reason. Note that in this study, this assumption is violated before we even look at the data: we know that the probability of the data taking on a value is not independent from all other values, because the same person will make multiple judgments in this study. They provide two feature importance ratings, one for each stimulus.
 
 Why is this a problem? We know that measurements taken from the same person are likely to be correlated (Singman & Kellen, 2019). For instance, maybe one person has a generally more conservative baseline for saying something matters, and so they will rate all features as much less important than someone else, irrespective of their actual relevance. What do we do in these situations?
 
@@ -48,7 +56,7 @@ library(lmerTest)   # For a nice summary for lme4
 
 #Let's load in the cleaned data
 
-df_long <- read_csv('/Users/sm6511/Desktop/Prediction-Accomodation-Exp/Analysis/Study3.0/df_long_for_R.csv') |>
+df_long <- read_csv('/Users/sm6511/Quarto Blog/data/df_long_for_R.csv') |>
   mutate(
     task = relevel(factor(task), ref = "predict"),
     feature_relevance = relevel(factor(feature_relevance), ref = "irrelevant"),
@@ -56,12 +64,6 @@ df_long <- read_csv('/Users/sm6511/Desktop/Prediction-Accomodation-Exp/Analysis/
     color_high = relevel(factor(color_high), ref = "Y"),
     feet_high = relevel(factor(feet_high), ref = "C")
   ) #Here I set reference levels for the statistical tests to be used later on.
-df_corr <- read_csv('/Users/sm6511/Desktop/Prediction-Accomodation-Exp/data/Study3.0/Cleaned/df_corr_for_R.csv') |>
-  mutate(
-    task = relevel(factor(task), ref = "predict"),
-    feature_relevance = relevel(factor(feature_relevance), ref = "irrelevant"),
-    feature_dimension = relevel(factor(feature_dimension), ref = "feet"),
-  )
 
 ```
 
@@ -72,19 +74,19 @@ Let’s fit a model like this using lmer() from lme4. We will start by fitting a
 ```{r}
 model1 <- lmer(feature_importance ~ task * feature_relevance + 
                 (1|participant), data = df_long)
-summary(model)
+summary(model1)
 ```
 
-Note that we set the reference level for feature_relevance to 'irrelevant', and so the simple effect of 'taskaccommodate' above tells us whether accommodators assign higher importance scores to irrelevant features. As it turns out, they do not do sowith this measure! Before looking at the model that uses absolute values, let's evaluate our use of a model with random intercepts here. The difference between this model and a model with lm() involves the term (1\|participant). Generally, this term allows each group to have its own intercept. In our case, a group is just a single participant.
+Note that we set the reference level for feature_relevance to 'irrelevant', and so the simple effect of 'taskaccommodate' above tells us whether accommodators assign higher importance scores to irrelevant features. As it turns out, they do not do so with this measure! Before looking at the model that uses absolute values, let's evaluate our use of a model with random intercepts here. The difference between this model and a model with lm() involves the term (1\|participant). Generally, this term allows each group to have its own intercept. In our case, a group is just a single participant.
 
-Check again the output we got when using this model: we get the warning: ‘boundary (singular) fit: see help('isSingular')’. When we check the help page, it tells us the following: “some ‘dimensions’ of the variance-covariance matrix have been estimated as exactly zero’. We can see that in our case, the variance and standard deviation of the random effect are at zero. Why is this? It’s likely because we only have two observations per participant, which is not enough for the model to find differences between participants. The between-subjects effects of feature relevance are much stronger. We can confirm this again by running isSingular and looking at the correlation values for the intercept term.
+However, there is a problem with our use of lmer() in this case: if we check the output, we got a warning: ‘boundary (singular) fit: see help('isSingular')’. When we check the help page on this warning, it tells us the following: “some ‘dimensions’ of the variance-covariance matrix have been estimated as exactly zero’. We can see that in our case, the variance and standard deviation of the random effect are at zero. Why is this? One reason could be that we only have two observations per participant, which is not enough for the model to find participant differences. The between-subjects effects of feature relevance are much stronger. Alternatively, perhaps our introduction of signs (negative values) cancels out any grouping effect of participants. More on this later. First, we confirm the problem with this model by running isSingular and looking at the correlation values for the intercept term.
 
 ```{r}
 isSingular(model1)
 VarCorr(model1)
 ```
 
-We can go a bit further to check this by looking at the residuals for importance ratings after accounting for task and relevance. In other words, if we subtract the mean rating within each task x feature relevance condition, we can see how much is left over that is not explained by condition differences, and so could be the result of differences in each participant’s mean tendencies. If there was a strong baseline difference between participants that matters here, then you would expect people who rate irrelevant features more highly to also rate relevant features more highly. Put more simply, do participants who give higher ratings for irrelevant features also tend to give higher ratings in the other condition? This would suggest unexplained variance. Let’s see if that’s the case:
+We can see from these outputs that the grouping did not explain variance, and we have some leftover unexplained variation in our model. We can go a bit further to check this by looking at the residuals for importance ratings after accounting for task and relevance. In other words, if we subtract the mean rating within each task x feature relevance condition, we can see how much is left over that is not explained by condition differences, and so could be the result of differences in each participant’s mean tendencies. If there was a strong baseline difference between participants that matters here, then you might expect people who rate irrelevant features more highly to also rate relevant features more highly. Put more simply, do participants who give higher ratings for irrelevant features also tend to give higher ratings in the other condition? This would suggest unexplained variance. Let’s see if that’s the case:
 
 ```{r}
 library(dplyr)
@@ -111,7 +113,7 @@ ggplot(df_resid, aes(x = irrelevant, y = relevant)) +
 
 ```
 
-	What we can see is there’s no real correlation here between the residuals, so some participants are not prone to assigning higher importance scores than others. Therefore, there just isn’t enough structure in the data for the random intercepts to matter. This could be because there really aren’t differences in baseline tendencies for participants in these paradigms, or that we don’t have enough data to capture them. However, it was still a good idea to start with this model. Theoretically, the baseline between participants may have indeed mattered. In fact, we can generate a scenario where it would matter. Let’s suppose participants rated many more irrelevant and relevant items, and lets simulate some baseline tendency differences between participants:
+	What we can see is there’s no real correlation here between the residuals, so some participants are not prone to assigning higher importance scores than others. Therefore, there just isn’t enough structure in the data for the random intercepts to matter. This could be because there really aren’t differences in baseline tendencies for participants in these paradigms, or that we don’t have enough data to capture them. However, it was still a good idea to start with this model. Theoretically, the baseline between participants could have indeed mattered. In fact, we can generate a scenario where it would matter. Let’s suppose participants rated many more irrelevant and relevant items, and lets simulate some baseline tendency differences between participants:
 
 ```{r}
 library(dplyr)
@@ -170,16 +172,16 @@ ggplot(df_resid, aes(x = irrelevant, y = relevant)) +
 
 ```
 
-The above plot confirms what we *should* see given built in baseline tendencies: there is some effect of grouping (by participant), wherein certain participants are more prone to assigning higher ratings to both features than others, even after we account for the effects of task and relevance.
+The above plot confirms what we *should* see given built-in baseline tendencies: there is some effect of grouping (by participant), wherein certain participants are more prone to assigning higher ratings to both features than others, even after we account for the effects of task and relevance.
 
-Now that we have established that our use of lmer() for feature importance scores was unnecessary, even if worth checking, let's look at the absolute value of feature importance scores!
+Now that we have established that our use of lmer() for feature importance scores was unnecessary, even if worth checking, let's look at the absolute value of feature importance scores.
 
 ```{r}
 model2 <- lmer(abs_feature_importance ~ task * feature_relevance + (1|participant), data = df_long) 
 summary(model2)
 ```
 
-Notice how much our findings have changed! First, we no longer get the 'Is Singular' errors, indicating that random intercepts *did* make a difference here. In fact, though I will not produce another plot of the residuals, if we did, they would look similar to the simulated pattern. What does this tell us? When we compress the space and look at whether certain people report higher importance scores *generally, without accounting for whether they got the direction right* there is an effect of grouping! This is important because, in fact, participants did not report a score form -7 to 7, they reported a score from 1-7. We transformed it to -7 to 7 to measure whether they got the direction right. In that sense, the truer measure of what they initially did shows a bias by participant.
+Notice how much our findings have changed! First, we no longer get the 'Is Singular' errors, indicating that random intercepts *did* make a difference here. In fact, though I will not produce another plot of the residuals, if we did, they would look similar to the simulated pattern. What does this tell us? When we look at whether certain people report higher importance scores generally, *without accounting for whether they got the direction right* there is an effect of grouping! This is important because, in fact, participants did not report a score form -7 to 7, they reported a score from 1-7. We transformed it to -7 to 7 to measure whether they got the direction right. In that sense, the truer measure of what they initially did shows a bias by participant.
 
 Next, even after accounting for this difference, we now do see a difference between predictors and accommodators, wherein accommodators assign higher importance scores to irrelevant features than predictors! However, we do not see an interaction, so it does not appear that the difference between the scores they assign to irrelevant v relevant features differs by condition. This suggests that we should investigate whether they also assign higher importance scores to relevant feature. To do this, we can use emmeans, which estimates the mean difference for each level of a picked variable. In this case, we look at mean task difference for each level of feature relevance:
 
@@ -190,7 +192,7 @@ emmeans(model2, ~ task | feature_relevance) |>
 
 We can confirm from the above that accommodators actually assign higher scores to both relevant and irrelevant features! We had predicted they would only do so for irrelevant features, so this is a useful result. It suggests that accommodators inflate how important they think features are generally, irrespective of relevance.
 
-We've now looked at two models and seen that in what case, clustering matters, and in the other case, it does not. There's a nice metric that will let us evaluate this directly, the 'Interclass Correlation Coefficient' (ICC). This is a measure of how much of the *total variability* is due to the groups, where an ICC of 0 would mean there's no effect of grouping. Based on what we saw above, we would expect this measure to be problematic for model1 (and perhaps have an ICC of 0) but show some non-zero number for model2.
+We've now looked at two models and seen that in one case, clustering matters, and in the other case, it does not. There's a nice metric that will let us evaluate this directly, the 'Interclass Correlation Coefficient' (ICC). This is a measure of how much of the *total variability* is due to the groups, where an ICC of 0 would mean there's no effect of grouping. Based on what we saw above, we would expect this measure to be problematic for model1 (and perhaps have an ICC of 0) but show some non-zero number for model2.
 
 ```{r}
 library(performance)
@@ -200,7 +202,7 @@ icc(model2)
 
 Our adjusted ICC for model 2 is .043, which is fairly low. So even though there is an effect of grouping here, it is not very strong.
 
-Finally, let's do some diagnostics to evaluate whether some of the other assumptions relevant to mixed models hold with our data. check_model from the performance package is a nice way to run many of these at once.
+Finally, let's do some diagnostics to evaluate whether some of the other assumptions relevant to mixed linear models hold with our data. check_model from the performance package is a nice way to run many of these at once.
 
 ```{r}
 #| fig-width: 14
@@ -208,7 +210,7 @@ Finally, let's do some diagnostics to evaluate whether some of the other assumpt
 performance::check_model(model2)
 ```
 
-A few tests stand out. First, the posterior predictive check. Of the assumptions, this is the most concerning. What this check looks at is, after we fit the model, does the simulated data given the model match the the actual data? We learn something interesting here: it deviates, In particular, the real data is clearly bimodal. This actually may not be surprising, because we are again using a likert scale of importance ratings to collect data. Much of the data is probably clustered towards the low and high ends, which may suggest that people either do not report at all (and are around 0) or do report, and report fairly high values.
+A few tests stand out. First, the posterior predictive check. Of the assumptions, this is the most concerning. What this check looks at is, after we fit the model, does the simulated data given the model match the the actual data? We learn something interesting here: it deviates, In particular, the real data is clearly bimodal. This actually may not be theoretically surprising, because we are again using a likert scale of importance ratings to collect data. Much of the data is probably clustered towards the low and high ends, which may suggest that people either do not report at all (and are around 0) or do report, and report fairly high values.
 
 Second, the residuals are not entirely normal. In particular, we see a sort of s-shape, and this is what we might expected given that our outcome is bounded from 0-7. These two deviations from what we'd assume with our mixed model are likely related, in that the s-shaped residuals could be a consequence of the bimodal data.
 
@@ -217,7 +219,7 @@ Since we found these departures from the assumptions of linear models, it might 
 One possibility for the latter idea is a 'hurdle' model which asks two questions: first, what is the probability of getting 0 - in our case, do our predictors make participants more likely to 'opt in' and believe a feature matters to begin with. Second, *for those participants who opt in*, do our predictors make a difference to their ratings.
 
 ```{r}
-library(glmer) #generalized linear model. We are loading this in now because for the first step, our outcome isn't going to be continuous. We are going to ask 'does a participant say something is important at all'
+#We are going to first use a generalized linear model. We are loading this in now because for the first step, our outcome isn't going to be continuous. We are going to ask 'does a participant say something is important at all'
 df_long <- df_long |>
   mutate(is_important = abs_feature_importance > 0)
 
@@ -225,7 +227,7 @@ model_hurdle1 <- glmer(
   is_important ~ task * feature_relevance + (1 | participant),
   family = binomial, 
   data = df_long
-) #again, this model is for the binary outcome of whether a feature is said to matter
+) #again, this model is for the binary outcome of whether a feature is said to matter to begin with
 
 summary(model_hurdle1)
 
@@ -238,22 +240,23 @@ model_hurdle2 <- lmer(
 )
 summary(model_hurdle2)
 
+
 ```
 
 What we find is interesting: we find only marginally significant evidence that accommodators are more likely to believe that irrelevant features matter *to begin with*, but we find significant evidence that accommodators believe irrelevant features matter more than predictors, for those participants who say the irrelevant feature matters!
 
-A final factor worth considering is whether or not we should also use random slopes in addition to random intercepts in this model. First, we should consider what this means. In this case, we are interested in whether participants also differ in how strong they distinguish relevant and irrelevant features on *an individual basis*. Again, this is different from a fixed effect wherein we see whether this differs as a function of task. Instead, we just want to know whether, when we account for those effects, there is left over variability that can be captured by differences in participants' sensitivity to relevance. Hence, there is a theoretical reason to include random slopes when analyzing this data.
+In summary, we first found that using lmer() is useful when there is a theoretical reason to expect that grouping - such as variation as a result of participant idiosyncrasies - might affect the data you collect. Second, we investigated why we found that no variability was explained using random intercepts when we transformed compressed data, but not when investigating a model based on the original data. Third, we checked our assumptions for using a linear mixed model generally, and found that a couple were violated. We discussed some approaches to deal with this.
+
+Before ending, I want to briefly consider the other part of random effects: random slopes. Should we have used random slopes in addition to random intercepts in this model? First, we should consider what this means. In this case, we might be interested in whether participants differ in how strongly they distinguish relevant and irrelevant features on *an individual basis*. Again, this is different from a fixed effect wherein we see whether this differs as a function of task. Instead, we just want to know whether, when we account for those effects, there is left over variability that can be captured by differences in participants' sensitivity to relevance. Hence, there is a theoretical reason to include random slopes when analyzing this data.
 
 ```{r}
-model <- lmer(
-  abs_feature_importance ~ task * feature_relevance +
-    (1 + feature_relevance | participant),
-  data = df_long
+try(
+  lmer(
+    abs_feature_importance ~ task * feature_relevance +
+      (1 + feature_relevance | participant),
+    data = df_long
+  )
 )
 ```
 
 As it turns out, however, in this case we do not have enough data to produce a meaningful model with random slopes. This is, again, because we only produce two ratings per participant.
-
-*Summary*
-
-In this tutorial, we walked through using mixed models with random intercepts to fit data from a real experiment. We found a significant...

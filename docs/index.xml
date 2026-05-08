@@ -14,22 +14,31 @@
 <item>
   <title>Final Project - MLM Example</title>
   <dc:creator>Sebastian Montesinos</dc:creator>
-  <link>https://your-website-url.example.com/posts/post-with-code/</link>
+  <link>https://your-website-url.example.com/posts/Project_Post/</link>
   <description><![CDATA[ 
 
 
 
 
 
-<p>In this study, we were interested in comparing two conditions in a category learning study. In the category learning paradigm, people observed the association between reptiles with differing features and their fertility. Their task was to figure out which of the two features was relevant to fertility, and which was irrelevant. The four stimuli used are pictured below:</p>
-<p>As you can see, we had two features each with two directions: webbed feet or curved feet, and red or green coloring. When a feature was relevant, one of the directions would be associated with less fertility, the other with more fertility. However, this association was probabilistic: We draw how fertile a given reptile was on each trial from a normal distribution. The purpose of this was to create noise, such that the irrelevant feature had some association with fertility even though it was not part of the data-generating process.</p>
+<p><strong>Final Project</strong>: Evaluating a Mixed Effects Model using Real Data</p>
+<p>In the following post, I will walk through the use of a mixed effects model for data in an experiment on category learning. I will start by explaining the experiment itself, before fitting a model. Finally, I will elaborate on the decision-making process in choosing this model, check assumptions, and see whether there are alternate modeling approaches one should use in this case.</p>
+<p>In the study under consideration, people observed the association between reptiles with differing features and their fertility. Their task was to figure out which of the two features was relevant to fertility, and which was irrelevant. The four stimuli used are pictured below:</p>
+<div class="grid quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><img src="https://your-website-url.example.com/posts/Project_Post/G_C.png" class="img-fluid" style="width:100.0%"> <img src="https://your-website-url.example.com/posts/Project_Post/G_F.png" class="img-fluid" style="width:100.0%"> <img src="https://your-website-url.example.com/posts/Project_Post/Y_C.png" class="img-fluid" style="width:100.0%"> <img src="https://your-website-url.example.com/posts/Project_Post/Y_F.png" class="img-fluid" style="width:100.0%"></p>
+</div>
+</div>
+</div>
+<p>As you can see, we had two features each with two directions: webbed feet or curved feet, and red or green coloring. When a feature was relevant, one of the directions would be associated with less fertility, the other with more fertility. However, this association was probabilistic: We would draw how fertile a given reptile was on each trial from a normal distribution. The purpose of this was to create noise, such that the irrelevant feature had some association with fertility even though it was not part of the data-generating process.</p>
 <p>The key question of our study was as follows: Do participants who are prompted to accommodate observations (i.e., explain them after the fact) and those who are prompted to predict observations (i.e., generate predictions before observations are made) differ in what they learn about these stimuli?&nbsp;</p>
 <p>In the learning by predicting condition, participants learned by seeing one reptile at a time during training, and then estimated how fertile it is (the outcome variable). After each training trial, they received feedback in the form of how fertile it actually was. In the learning by accommodating condition, participants learned by seeing both the imaginary reptile and how fertile it is, and provided a free response about why it was that fertile. The exact trial order for training was yoked between participants in each condition, in that every unique order of training trials is assigned once to a participant in each condition.</p>
 <p>In order to evaluate the differences between these conditions, we used the following measure:</p>
 <ol type="1">
 <li>Feature-importance ratings: The ratings of importance that participants assign to each feature. These are captured by a series of questions to participants: a) whether a feature is relevant, b) which value of that feature was positively relevant to fertility, and c) how strongly relevant it was. These are converted to a -7 to 7 scale, where 0 represents that the feature made no difference to the outcome, -7 represents that the feature value made a (strong) negative difference to the outcome, and 7 represents that the feature value made a (strong) positive difference to the outcome</li>
 </ol>
-<p>We ended up using two measures of feature importance. The first was the measure above from -7 to 7, whereas the second was one that captured the <em>absolute value</em> of feature importance. The theoretical reason for this is that we suspected there were two ways in which accommodators might differ: first, they might overfit in that they systematically get the direction of the irrelevant feature right (overfitting and latching onto noise), or they just inflate the importance of the irrelevant feature, <em>irrespective</em> of whether they picked up on the noise. The former measure is captured by the feature importance ratings, the latter by their absolute value.</p>
+<p>We ended up using two measures of feature importance. The first was the measure above from -7 to 7, whereas the second was one that captured the <em>absolute value</em> of feature importance. The theoretical reason for this is that we suspected there were two ways in which accommodators might differ: first, they might overfit in that they systematically get the direction of the irrelevant feature right (overfitting and latching onto noise), or perhaps they just inflate the importance of the irrelevant feature, <em>irrespective</em> of whether they picked up on the noise. The former measure is captured by the feature importance ratings, the latter by their absolute value.</p>
 <p>This brings us to the topic of what sort of model we ought to use to evaluate differences between participants. Generally, we were interested in whether there were main effects or interactions involving condition. As I mentioned, were especially interested in whether accommodators assign higher importance scores to irrelevant features than predictors.</p>
 <p>What sort of model should we use to evaluate this data? One option would be to use lm() in r in order to evaluate feature importance scores as a function of condition and task relevance. However, lm() and other traditional statistical tests make a few key assumptions:</p>
 <ol type="1">
@@ -38,9 +47,9 @@
 <li><p>Homoscedasticity: The residuals have the same variance across levels of the independent variables</p></li>
 <li><p>Normality of residuals: the residuals follow a normal distribution</p></li>
 </ol>
-<p>I have highlighted the second assumption for an important reason. Note that in this study, this assumption is violated: we know that the probability of the data taking on a value is not independent from all other values, because the same person will make multiple judgments in this study. They provide two feature importance ratings, one for each stimulus, and they provide four ratings of the average fertility of each exemplar.</p>
+<p>I have highlighted the second assumption for an important reason. Note that in this study, this assumption is violated before we even look at the data: we know that the probability of the data taking on a value is not independent from all other values, because the same person will make multiple judgments in this study. They provide two feature importance ratings, one for each stimulus.</p>
 <p>Why is this a problem? We know that measurements taken from the same person are likely to be correlated (Singman &amp; Kellen, 2019). For instance, maybe one person has a generally more conservative baseline for saying something matters, and so they will rate all features as much less important than someone else, irrespective of their actual relevance. What do we do in these situations?</p>
-<p>In this tutorial, we will examine the use of linear mixed effects models as a solution to this problem. These models capture two kinds of effects: first, fixed effects, which represent the population-level effect of predictors (these are the main effects or interactions we are used to getting with regular regression). Second, random effects, which are sources of variability across groups within the experiment, such as across different sorts of participants.</p>
+<p>In this tutorial, we will examine the use of linear mixed effects models as a solution to this problem. These models capture two kinds of effects: first, fixed effects, which represent the population-level effect of predictors (these are the main effects or interactions we are used to getting with regular regression). Second, random effects, which are sources of variability across groups within the experiment. In our case the groups are just different participants.</p>
 <p>Let’s begin by loading in the cleaned data.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
@@ -117,7 +126,7 @@ font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">read_csv</span>(<span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'/Users/sm6511/Desktop/Prediction-Accomodation-Exp/Analysis/Study3.0/df_long_for_R.csv'</span>) <span class="sc" style="color: #5E5E5E;
+font-style: inherit;">'/Users/sm6511/Quarto Blog/data/df_long_for_R.csv'</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span id="cb11-4">  <span class="fu" style="color: #4758AB;
@@ -191,67 +200,11 @@ dbl (4): participant, feature_importance, reported_relevant, abs_feature_imp...
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1">df_corr <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">read_csv</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'/Users/sm6511/Desktop/Prediction-Accomodation-Exp/data/Study3.0/Cleaned/df_corr_for_R.csv'</span>) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span id="cb13-2">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mutate</span>(</span>
-<span id="cb13-3">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">task =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">relevel</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">factor</span>(task), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ref =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"predict"</span>),</span>
-<span id="cb13-4">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">feature_relevance =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">relevel</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">factor</span>(feature_relevance), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ref =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"irrelevant"</span>),</span>
-<span id="cb13-5">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">feature_dimension =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">relevel</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">factor</span>(feature_dimension), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">ref =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"feet"</span>),</span>
-<span id="cb13-6">  )</span></code></pre></div></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 868 Columns: 8
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr (6): participant, task, feature_dimension, high_value, feature_relevance...
-dbl (2): correlation, abs_correlation
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
 </div>
 <p>In the traditional linear model discussed earlier-which we could implement with lm()-there is a single intercept (β0) that represents the grand mean for all participants. However, a linear mixed model allows us to specify a random-intercepts model, in which each individual is allowed to have their own unique baseline effect. What this means, practically, is that if participants have the sort of idiosyncrasies described earlier, the model will capture such idiosyncrasies.</p>
 <p>Let’s fit a model like this using lmer() from lme4. We will start by fitting a model on the regular feature importance ratings:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1">model <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1">model1 <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -262,7 +215,7 @@ background-color: null;
 font-style: inherit;">*</span> feature_relevance <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> </span>
-<span id="cb15-2">                (<span class="dv" style="color: #AD0000;
+<span id="cb13-2">                (<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -272,9 +225,9 @@ font-style: inherit;">data =</span> df_long)</span></code></pre></div></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>boundary (singular) fit: see help('isSingular')</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">summary</span>(model)</span></code></pre></div></div>
+font-style: inherit;">summary</span>(model1)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 lmerModLmerTest]
@@ -316,43 +269,43 @@ optimizer (nloptwrap) convergence code: 0 (OK)
 boundary (singular) fit: see help('isSingular')</code></pre>
 </div>
 </div>
-<p>Note that we set the reference level for feature_relevance to ‘irrelevant’, and so the simple effect of ‘taskaccommodate’ above tells us whether accommodators assign higher importance scores to irrelevant features. As it turns out, they do not do sowith this measure! Before looking at the model that uses absolute values, let’s evaluate our use of a model with random intercepts here. The difference between this model and a model with lm() involves the term (1|participant). Generally, this term allows each group to have its own intercept. In our case, a group is just a single participant.</p>
-<p>Check again the output we got when using this model: we get the warning: ‘boundary (singular) fit: see help(’isSingular’)’. When we check the help page, it tells us the following: “some ‘dimensions’ of the variance-covariance matrix have been estimated as exactly zero’. We can see that in our case, the variance and standard deviation of the random effect are at zero. Why is this? It’s likely because we only have two observations per participant, which is not enough for the model to find differences between participants. The between-subjects effects of feature relevance are much stronger. We can confirm this again by running isSingular and looking at the correlation values for the intercept term.</p>
+<p>Note that we set the reference level for feature_relevance to ‘irrelevant’, and so the simple effect of ‘taskaccommodate’ above tells us whether accommodators assign higher importance scores to irrelevant features. As it turns out, they do not do so with this measure! Before looking at the model that uses absolute values, let’s evaluate our use of a model with random intercepts here. The difference between this model and a model with lm() involves the term (1|participant). Generally, this term allows each group to have its own intercept. In our case, a group is just a single participant.</p>
+<p>However, there is a problem with our use of lmer() in this case: if we check the output, we got a warning: ‘boundary (singular) fit: see help(’isSingular’)’. When we check the help page on this warning, it tells us the following: “some ‘dimensions’ of the variance-covariance matrix have been estimated as exactly zero’. We can see that in our case, the variance and standard deviation of the random effect are at zero. Why is this? One reason could be that we only have two observations per participant, which is not enough for the model to find participant differences. The between-subjects effects of feature relevance are much stronger. Alternatively, perhaps our introduction of signs (negative values) cancels out any grouping effect of participants. More on this later. First, we confirm the problem with this model by running isSingular and looking at the correlation values for the intercept term.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">isSingular</span>(model)</span></code></pre></div></div>
+font-style: inherit;">isSingular</span>(model1)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] TRUE</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">VarCorr</span>(model)</span></code></pre></div></div>
+font-style: inherit;">VarCorr</span>(model1)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> Groups      Name        Std.Dev.
  participant (Intercept) 0.0000  
  Residual                3.3345  </code></pre>
 </div>
 </div>
-<p>We can go a bit further to check this by looking at the residuals for importance ratings after accounting for task and relevance. In other words, if we subtract the mean rating within each task x feature relevance condition, we can see how much is left over that is not explained by condition differences, and so could be the result of differences in each participant’s mean tendencies. If there was a strong baseline difference between participants that matters here, then you would expect people who rate irrelevant features more highly to also rate relevant features more highly. Put more simply, do participants who give higher ratings for irrelevant features also tend to give higher ratings in the other condition? This would suggest unexplained variance. Let’s see if that’s the case:</p>
+<p>We can see from these outputs that the grouping did not explain variance, and we have some leftover unexplained variation in our model. We can go a bit further to check this by looking at the residuals for importance ratings after accounting for task and relevance. In other words, if we subtract the mean rating within each task x feature relevance condition, we can see how much is left over that is not explained by condition differences, and so could be the result of differences in each participant’s mean tendencies. If there was a strong baseline difference between participants that matters here, then you might expect people who rate irrelevant features more highly to also rate relevant features more highly. Put more simply, do participants who give higher ratings for irrelevant features also tend to give higher ratings in the other condition? This would suggest unexplained variance. Let’s see if that’s the case:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(dplyr)</span>
-<span id="cb23-2"><span class="fu" style="color: #4758AB;
+<span id="cb21-2"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(ggplot2)</span>
-<span id="cb23-3">df_resid <span class="ot" style="color: #003B4F;
+<span id="cb21-3">df_resid <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> df_long <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb23-4">  <span class="fu" style="color: #4758AB;
+<span id="cb21-4">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">group_by</span>(task, feature_relevance) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb23-5">  <span class="fu" style="color: #4758AB;
+<span id="cb21-5">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -365,33 +318,33 @@ background-color: null;
 font-style: inherit;">%&gt;%</span> <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#get residuals</span></span>
-<span id="cb23-6">  <span class="fu" style="color: #4758AB;
+<span id="cb21-6">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ungroup</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb23-7">  <span class="fu" style="color: #4758AB;
+<span id="cb21-7">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">select</span>(participant, task, feature_relevance, residuals) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb23-8">  <span class="fu" style="color: #4758AB;
+<span id="cb21-8">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">pivot_wider</span>(</span>
-<span id="cb23-9">    <span class="at" style="color: #657422;
+<span id="cb21-9">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">id_cols =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">c</span>(participant, task),</span>
-<span id="cb23-10">    <span class="at" style="color: #657422;
+<span id="cb21-10">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">names_from =</span> feature_relevance,</span>
-<span id="cb23-11">    <span class="at" style="color: #657422;
+<span id="cb21-11">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">values_from =</span> residuals</span>
-<span id="cb23-12">  )</span>
-<span id="cb23-13"></span>
-<span id="cb23-14"><span class="fu" style="color: #4758AB;
+<span id="cb21-12">  )</span>
+<span id="cb21-13"></span>
+<span id="cb21-14"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ggplot</span>(df_resid, <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -402,7 +355,7 @@ background-color: null;
 font-style: inherit;">y =</span> relevant)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb23-15">  <span class="fu" style="color: #4758AB;
+<span id="cb21-15">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -411,7 +364,7 @@ background-color: null;
 font-style: inherit;">5</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb23-16">  <span class="fu" style="color: #4758AB;
+<span id="cb21-16">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_smooth</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -422,51 +375,51 @@ background-color: null;
 font-style: inherit;">+</span> <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#add a line plotting the relationship</span></span>
-<span id="cb23-17">  <span class="fu" style="color: #4758AB;
+<span id="cb21-17">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">labs</span>(</span>
-<span id="cb23-18">    <span class="at" style="color: #657422;
+<span id="cb21-18">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Residuals across ratings of irrelevant and relevant exemplars"</span>,</span>
-<span id="cb23-19">    <span class="at" style="color: #657422;
+<span id="cb21-19">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"Irrelevant rating residual"</span>,</span>
-<span id="cb23-20">    <span class="at" style="color: #657422;
+font-style: inherit;">"Irrelevant rating residuals"</span>,</span>
+<span id="cb21-20">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"Relevant rating residual"</span></span>
-<span id="cb23-21">  )</span></code></pre></div></div>
+font-style: inherit;">"Relevant rating residuals"</span></span>
+<span id="cb21-21">  )</span></code></pre></div></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://your-website-url.example.com/posts/post-with-code/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="https://your-website-url.example.com/posts/Project_Post/index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<pre><code>What we can see is there’s no real correlation here as a function of the relevance of a feature. Therefore, there just isn’t enough structure in the data for the random intercepts to matter. This could be because there really aren’t differences in baseline tendencies for participants in these paradigms, or that we don’t have enough data to capture them. However, it was still a good idea to start with this model. Theoretically, the baseline between participants may have indeed mattered. In fact, we can generate a scenario where it would matter. Let’s suppose participants rated many more irrelevant and relevant items, and lets simulate some baseline tendency differences between participants:</code></pre>
+<pre><code>What we can see is there’s no real correlation here between the residuals, so some participants are not prone to assigning higher importance scores than others. Therefore, there just isn’t enough structure in the data for the random intercepts to matter. This could be because there really aren’t differences in baseline tendencies for participants in these paradigms, or that we don’t have enough data to capture them. However, it was still a good idea to start with this model. Theoretically, the baseline between participants could have indeed mattered. In fact, we can generate a scenario where it would matter. Let’s suppose participants rated many more irrelevant and relevant items, and lets simulate some baseline tendency differences between participants:</code></pre>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">library</span>(dplyr)</span>
-<span id="cb26-2"></span>
-<span id="cb26-3"><span class="do" style="color: #5E5E5E;
+<span id="cb24-2"></span>
+<span id="cb24-3"><span class="do" style="color: #5E5E5E;
 background-color: null;
 font-style: italic;">###First we are going to copy each row, to pretend that participants saw 10x more stimuli</span></span>
-<span id="cb26-4">df_expanded <span class="ot" style="color: #003B4F;
+<span id="cb24-4">df_expanded <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> df_long <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb26-5">  <span class="fu" style="color: #4758AB;
+<span id="cb24-5">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">slice</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -481,61 +434,61 @@ background-color: null;
 font-style: inherit;">each =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">10</span>)) </span>
-<span id="cb26-6"></span>
-<span id="cb26-7"><span class="co" style="color: #5E5E5E;
+<span id="cb24-6"></span>
+<span id="cb24-7"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#Now we are 'simulating' different baseline tendencies per participant. So what we have is a vector with some preset baseline tendency for each participant</span></span>
-<span id="cb26-8"><span class="fu" style="color: #4758AB;
+<span id="cb24-8"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">set.seed</span>(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>)</span>
-<span id="cb26-9">participant_offsets <span class="ot" style="color: #003B4F;
+<span id="cb24-9">participant_offsets <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">rnorm</span>(</span>
-<span id="cb26-10">  <span class="fu" style="color: #4758AB;
+<span id="cb24-10">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">n_distinct</span>(df_expanded<span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">$</span>participant), <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#size of vector = amount of participants</span></span>
-<span id="cb26-11">  <span class="at" style="color: #657422;
+<span id="cb24-11">  <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">mean =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0</span>,</span>
-<span id="cb26-12">  <span class="at" style="color: #657422;
+<span id="cb24-12">  <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">sd =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">2</span></span>
-<span id="cb26-13">)</span>
-<span id="cb26-14"></span>
-<span id="cb26-15"><span class="co" style="color: #5E5E5E;
+<span id="cb24-13">)</span>
+<span id="cb24-14"></span>
+<span id="cb24-15"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#Now we go back to df_expanded, and we are adding that offset to their data.</span></span>
-<span id="cb26-16">df_expanded <span class="ot" style="color: #003B4F;
+<span id="cb24-16">df_expanded <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> df_expanded <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb26-17">  <span class="fu" style="color: #4758AB;
+<span id="cb24-17">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">mutate</span>(</span>
-<span id="cb26-18">    <span class="at" style="color: #657422;
+<span id="cb24-18">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">pid =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">as.numeric</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">factor</span>(participant)),</span>
-<span id="cb26-19">    <span class="at" style="color: #657422;
+<span id="cb24-19">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">feature_importance_sim =</span></span>
-<span id="cb26-20">      feature_importance <span class="sc" style="color: #5E5E5E;
+<span id="cb24-20">      feature_importance <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span> participant_offsets[pid] <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -548,16 +501,16 @@ background-color: null;
 font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>)</span>
-<span id="cb26-21">  )</span>
-<span id="cb26-22"><span class="co" style="color: #5E5E5E;
+<span id="cb24-21">  )</span>
+<span id="cb24-22"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#This just refits the same model as before</span></span>
-<span id="cb26-23">model_sim <span class="ot" style="color: #003B4F;
+<span id="cb24-23">model_sim <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">lmer</span>(</span>
-<span id="cb26-24">  feature_importance_sim <span class="sc" style="color: #5E5E5E;
+<span id="cb24-24">  feature_importance_sim <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">~</span> task <span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -568,11 +521,11 @@ background-color: null;
 font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|</span> participant),</span>
-<span id="cb26-25">  <span class="at" style="color: #657422;
+<span id="cb24-25">  <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">data =</span> df_expanded</span>
-<span id="cb26-26">)</span>
-<span id="cb26-27"><span class="fu" style="color: #4758AB;
+<span id="cb24-26">)</span>
+<span id="cb24-27"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">summary</span>(model_sim)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
@@ -613,21 +566,21 @@ taskaccmmdt -0.707
 ftr_rlvncrl -0.192  0.136       
 tskccmmdt:_  0.136 -0.192 -0.707</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><span class="co" style="color: #5E5E5E;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">#Now we can produce th same plot we did before and see whether there is a correlation.</span></span>
-<span id="cb28-2"></span>
-<span id="cb28-3">df_resid <span class="ot" style="color: #003B4F;
+<span id="cb26-2"></span>
+<span id="cb26-3">df_resid <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> df_expanded <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb28-4">  <span class="fu" style="color: #4758AB;
+<span id="cb26-4">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">group_by</span>(task, feature_relevance) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb28-5">  <span class="fu" style="color: #4758AB;
+<span id="cb26-5">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -638,49 +591,49 @@ background-color: null;
 font-style: inherit;">mean</span>(feature_importance_sim)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb28-6">  <span class="fu" style="color: #4758AB;
+<span id="cb26-6">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ungroup</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb28-7">  <span class="fu" style="color: #4758AB;
+<span id="cb26-7">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">group_by</span>(participant, task, feature_relevance) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb28-8">  <span class="fu" style="color: #4758AB;
+<span id="cb26-8">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">summarize</span>(</span>
-<span id="cb28-9">    <span class="at" style="color: #657422;
+<span id="cb26-9">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">mean_residual =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">mean</span>(residuals),</span>
-<span id="cb28-10">    <span class="at" style="color: #657422;
+<span id="cb26-10">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">.groups =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"drop"</span></span>
-<span id="cb28-11">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb26-11">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb28-12">  <span class="fu" style="color: #4758AB;
+<span id="cb26-12">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">pivot_wider</span>(</span>
-<span id="cb28-13">    <span class="at" style="color: #657422;
+<span id="cb26-13">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">id_cols =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">c</span>(participant, task),</span>
-<span id="cb28-14">    <span class="at" style="color: #657422;
+<span id="cb26-14">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">names_from =</span> feature_relevance,</span>
-<span id="cb28-15">    <span class="at" style="color: #657422;
+<span id="cb26-15">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">values_from =</span> mean_residual</span>
-<span id="cb28-16">  )</span>
-<span id="cb28-17"></span>
-<span id="cb28-18"><span class="fu" style="color: #4758AB;
+<span id="cb26-16">  )</span>
+<span id="cb26-17"></span>
+<span id="cb26-18"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ggplot</span>(df_resid, <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -691,7 +644,7 @@ background-color: null;
 font-style: inherit;">y =</span> relevant)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb28-19">  <span class="fu" style="color: #4758AB;
+<span id="cb26-19">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -700,7 +653,7 @@ background-color: null;
 font-style: inherit;">5</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb28-20">  <span class="fu" style="color: #4758AB;
+<span id="cb26-20">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_smooth</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -709,40 +662,40 @@ background-color: null;
 font-style: inherit;">"lm"</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb28-21">  <span class="fu" style="color: #4758AB;
+<span id="cb26-21">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">labs</span>(</span>
-<span id="cb28-22">    <span class="at" style="color: #657422;
+<span id="cb26-22">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Residuals across ratings of irrelevant and relevant exemplars (Simulated data)"</span>,</span>
-<span id="cb28-23">    <span class="at" style="color: #657422;
+<span id="cb26-23">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Irrelevant rating residual"</span>,</span>
-<span id="cb28-24">    <span class="at" style="color: #657422;
+<span id="cb26-24">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Relevant rating residual"</span></span>
-<span id="cb28-25">  )</span></code></pre></div></div>
+<span id="cb26-25">  )</span></code></pre></div></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
 </div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="https://your-website-url.example.com/posts/post-with-code/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="https://your-website-url.example.com/posts/Project_Post/index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>The above plot confirms what we <em>should</em> see given built in baseline tendencies: there is some effect of grouping (by participant), wherein certain participants are prone to assign higher ratings to both features than others.</p>
-<p>Now that we have established that our use of lmer() for feature importance scores was unnecessary, even if worth checking, let’s look at the absolute value of feature importance scores!</p>
+<p>The above plot confirms what we <em>should</em> see given built-in baseline tendencies: there is some effect of grouping (by participant), wherein certain participants are more prone to assigning higher ratings to both features than others, even after we account for the effects of task and relevance.</p>
+<p>Now that we have established that our use of lmer() for feature importance scores was unnecessary, even if worth checking, let’s look at the absolute value of feature importance scores.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1">model <span class="ot" style="color: #003B4F;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1">model2 <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -759,9 +712,9 @@ background-color: null;
 font-style: inherit;">|</span>participant), <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">data =</span> df_long) </span>
-<span id="cb30-2"><span class="fu" style="color: #4758AB;
+<span id="cb28-2"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">summary</span>(model)</span></code></pre></div></div>
+font-style: inherit;">summary</span>(model2)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
 lmerModLmerTest]
@@ -801,19 +754,19 @@ ftr_rlvncrl -0.692  0.489
 tskccmmdt:_  0.489 -0.692 -0.707</code></pre>
 </div>
 </div>
-<p>Notice how much our findings have changed! First, we no longer get the ‘Is Singular’ errors, indicating that random intercepts <em>did</em> make a difference here. In fact, though I will not produce another plot of the residuals, if we did, they would look similar to the simulated pattern. What does this tell us? When we compress the space and look at whether certain people report higher importance scores <em>generally, without accounting for whether they got the direction right</em> there is an effect of grouping! This is important because, in fact, participants did not report a score form -7 to 7, they reported a score from 1-7. We transformed it to -7 to 7 to measure whether they got the direction right. In that sense, the truer measure of what they initially did shows a bias by participant.</p>
+<p>Notice how much our findings have changed! First, we no longer get the ‘Is Singular’ errors, indicating that random intercepts <em>did</em> make a difference here. In fact, though I will not produce another plot of the residuals, if we did, they would look similar to the simulated pattern. What does this tell us? When we look at whether certain people report higher importance scores generally, <em>without accounting for whether they got the direction right</em> there is an effect of grouping! This is important because, in fact, participants did not report a score form -7 to 7, they reported a score from 1-7. We transformed it to -7 to 7 to measure whether they got the direction right. In that sense, the truer measure of what they initially did shows a bias by participant.</p>
 <p>Next, even after accounting for this difference, we now do see a difference between predictors and accommodators, wherein accommodators assign higher importance scores to irrelevant features than predictors! However, we do not see an interaction, so it does not appear that the difference between the scores they assign to irrelevant v relevant features differs by condition. This suggests that we should investigate whether they also assign higher importance scores to relevant feature. To do this, we can use emmeans, which estimates the mean difference for each level of a picked variable. In this case, we look at mean task difference for each level of feature relevance:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><span class="fu" style="color: #4758AB;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">emmeans</span>(model, <span class="sc" style="color: #5E5E5E;
+font-style: inherit;">emmeans</span>(model2, <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">~</span> task <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|</span> feature_relevance) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span></span>
-<span id="cb32-2">  <span class="fu" style="color: #4758AB;
+<span id="cb30-2">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">pairs</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -832,74 +785,263 @@ feature_relevance = relevant:
 Degrees-of-freedom method: kenward-roger </code></pre>
 </div>
 </div>
-<p>We can confirm from the above that accommodators actually assign higher scores to both relevant and irrelevant features! We had predicted they would only do so for irrelevant features, so this is a useful result. I will make a few comments on this later.</p>
-<p>A final factor worth considering is whether or not we should also use random slopes in addition to random intercepts in this model. First, we should consider what this means. In this case, we are interested in the effect of feature relevance on importance ratings: specifically, do accommodators rate irrelevant features as more important than predictors. A random slope for feature relevance would mean the following: the effect of feature relevance differs by participant; that is,</p>
-<p>Hence, there is a theoretical reason to include random slopes when analyzing this data. However, in our case, we do not have enough data to produce a meaningful model with random slopes. This is, again, because we only produce two ratings per participant.</p>
-
-
-
- ]]></description>
-  <category>news</category>
-  <category>code</category>
-  <category>analysis</category>
-  <guid>https://your-website-url.example.com/posts/post-with-code/</guid>
-  <pubDate>Sun, 10 May 2026 04:00:00 GMT</pubDate>
-  <media:content url="https://your-website-url.example.com/posts/post-with-code/image.jpg" medium="image" type="image/jpeg"/>
-</item>
-<item>
-  <title>Sperk</title>
-  <dc:creator>Sebastian Montesinos</dc:creator>
-  <link>https://your-website-url.example.com/posts/new-post/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>This is a post with executable code.</p>
+<p>We can confirm from the above that accommodators actually assign higher scores to both relevant and irrelevant features! We had predicted they would only do so for irrelevant features, so this is a useful result. It suggests that accommodators inflate how important they think features are generally, irrespective of relevance.</p>
+<p>We’ve now looked at two models and seen that in one case, clustering matters, and in the other case, it does not. There’s a nice metric that will let us evaluate this directly, the ‘Interclass Correlation Coefficient’ (ICC). This is a measure of how much of the <em>total variability</em> is due to the groups, where an ICC of 0 would mean there’s no effect of grouping. Based on what we saw above, we would expect this measure to be problematic for model1 (and perhaps have an ICC of 0) but show some non-zero number for model2.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="dv" style="color: #AD0000;
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(performance)</span>
+<span id="cb32-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">icc</span>(model1)</span></code></pre></div></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Can't compute random effect variances. Some variance components equal
+  zero. Your model may suffer from singularity (see `?lme4::isSingular`
+  and `?performance::check_singularity`).
+  Decrease the `tolerance` level to force the calculation of random effect
+  variances, or impose priors on your random effects parameters (using
+  packages like `brms` or `glmmTMB`).</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] NA</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">icc</span>(model2)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Intraclass Correlation Coefficient
+
+    Adjusted ICC: 0.043
+  Unadjusted ICC: 0.038</code></pre>
+</div>
+</div>
+<p>Our adjusted ICC for model 2 is .043, which is fairly low. So even though there is an effect of grouping here, it is not very strong.</p>
+<p>Finally, let’s do some diagnostics to evaluate whether some of the other assumptions relevant to mixed linear models hold with our data. check_model from the performance package is a nice way to run many of these at once.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1">performance<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">check_model</span>(model2)</span></code></pre></div></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="https://your-website-url.example.com/posts/Project_Post/index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A few tests stand out. First, the posterior predictive check. Of the assumptions, this is the most concerning. What this check looks at is, after we fit the model, does the simulated data given the model match the the actual data? We learn something interesting here: it deviates, In particular, the real data is clearly bimodal. This actually may not be theoretically surprising, because we are again using a likert scale of importance ratings to collect data. Much of the data is probably clustered towards the low and high ends, which may suggest that people either do not report at all (and are around 0) or do report, and report fairly high values.</p>
+<p>Second, the residuals are not entirely normal. In particular, we see a sort of s-shape, and this is what we might expected given that our outcome is bounded from 0-7. These two deviations from what we’d assume with our mixed model are likely related, in that the s-shaped residuals could be a consequence of the bimodal data.</p>
+<p>Since we found these departures from the assumptions of linear models, it might be useful to think about what alternate tests we could do that better match the data. For instance, perhaps we should consider an ordinal model, on the reasoning that we have ranked responses (from 0 to 7) that we can’t treat as continuous. Alternatively, perhaps we should first model whether or not people think a feature is relevant <em>at all</em> and then simply form a model for the participants who <em>do</em> rate a feature as relevant.</p>
+<p>One possibility for the latter idea is a ‘hurdle’ model which asks two questions: first, what is the probability of getting 0 - in our case, do our predictors make participants more likely to ‘opt in’ and believe a feature matters to begin with. Second, <em>for those participants who opt in</em>, do our predictors make a difference to their ratings.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#We are going to first use a generalized linear model. We are loading this in now because for the first step, our outcome isn't going to be continuous. We are going to ask 'does a participant say something is important at all'</span></span>
+<span id="cb38-2">df_long <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> df_long <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb38-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">is_important =</span> abs_feature_importance <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>)</span>
+<span id="cb38-4"></span>
+<span id="cb38-5">model_hurdle1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">glmer</span>(</span>
+<span id="cb38-6">  is_important <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> task <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> feature_relevance <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> (<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+font-style: inherit;">|</span> participant),</span>
+<span id="cb38-7">  <span class="at" style="color: #657422;
 background-color: null;
-font-style: inherit;">1</span></span></code></pre></div></div>
+font-style: inherit;">family =</span> binomial, </span>
+<span id="cb38-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> df_long</span>
+<span id="cb38-9">) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#again, this model is for the binary outcome of whether a feature is said to matter to begin with</span></span>
+<span id="cb38-10"></span>
+<span id="cb38-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(model_hurdle1)</span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: is_important ~ task * feature_relevance + (1 | participant)
+   Data: df_long
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   1122.2    1146.0    -556.1    1112.2       863 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-1.8493 -1.0893  0.5407  0.8756  1.0557 
+
+Random effects:
+ Groups      Name        Variance Std.Dev.
+ participant (Intercept) 0.04835  0.2199  
+Number of obs: 868, groups:  participant, 434
+
+Fixed effects:
+                                          Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept)                                -0.1027     0.1376  -0.746 0.455559
+taskaccommodate                             0.3370     0.1956   1.723 0.084927
+feature_relevancerelevant                   0.7076     0.1997   3.543 0.000396
+taskaccommodate:feature_relevancerelevant   0.3036     0.2909   1.044 0.296621
+                                             
+(Intercept)                                  
+taskaccommodate                           .  
+feature_relevancerelevant                 ***
+taskaccommodate:feature_relevancerelevant    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) tskccm ftr_rl
+taskaccmmdt -0.705              
+ftr_rlvncrl -0.685  0.489       
+tskccmmdt:_  0.466 -0.659 -0.669</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1">df_positive <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> df_long <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb40-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(abs_feature_importance <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#now we are going to look only at participants who 'opted-in' to saying a feature mattered. Here, we can switch back to using a linear model.</span></span>
+<span id="cb40-3"></span>
+<span id="cb40-4">model_hurdle2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lmer</span>(</span>
+<span id="cb40-5">  abs_feature_importance <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> task <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> feature_relevance <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> participant),</span>
+<span id="cb40-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> df_positive</span>
+<span id="cb40-7">)</span>
+<span id="cb40-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(model_hurdle2)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+lmerModLmerTest]
+Formula: abs_feature_importance ~ task * feature_relevance + (1 | participant)
+   Data: df_positive
+
+REML criterion at convergence: 1783.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.4533 -0.4949  0.2667  0.6031  1.9326 
+
+Random effects:
+ Groups      Name        Variance Std.Dev.
+ participant (Intercept) 0.1268   0.3561  
+ Residual                1.5301   1.2370  
+Number of obs: 532, groups:  participant, 370
+
+Fixed effects:
+                                          Estimate Std. Error       df t value
+(Intercept)                                 4.3087     0.1267 527.9744  34.005
+taskaccommodate                             0.4404     0.1724 527.9733   2.555
+feature_relevancerelevant                   1.1528     0.1634 340.6387   7.055
+taskaccommodate:feature_relevancerelevant  -0.2762     0.2214 319.3298  -1.247
+                                          Pr(&gt;|t|)    
+(Intercept)                                &lt; 2e-16 ***
+taskaccommodate                             0.0109 *  
+feature_relevancerelevant                 9.68e-12 ***
+taskaccommodate:feature_relevancerelevant   0.2132    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) tskccm ftr_rl
+taskaccmmdt -0.735              
+ftr_rlvncrl -0.747  0.549       
+tskccmmdt:_  0.551 -0.748 -0.738</code></pre>
 </div>
 </div>
+<p>What we find is interesting: we find only marginally significant evidence that accommodators are more likely to believe that irrelevant features matter <em>to begin with</em>, but we find significant evidence that accommodators believe irrelevant features matter more than predictors, for those participants who say the irrelevant feature matters!</p>
+<p>In summary, we first found that using lmer() is useful when there is a theoretical reason to expect that grouping - such as variation as a result of participant idiosyncrasies - might affect the data you collect. Second, we investigated why we found that no variability was explained using random intercepts when we transformed compressed data, but not when investigating a model based on the original data. Third, we checked our assumptions for using a linear mixed model generally, and found that a couple were violated. We discussed some approaches to deal with this.</p>
+<p>Before ending, I want to briefly consider the other part of random effects: random slopes. Should we have used random slopes in addition to random intercepts in this model? First, we should consider what this means. In this case, we might be interested in whether participants differ in how strongly they distinguish relevant and irrelevant features on <em>an individual basis</em>. Again, this is different from a fixed effect wherein we see whether this differs as a function of task. Instead, we just want to know whether, when we account for those effects, there is left over variability that can be captured by differences in participants’ sensitivity to relevance. Hence, there is a theoretical reason to include random slopes when analyzing this data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">try</span>(</span>
+<span id="cb42-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lmer</span>(</span>
+<span id="cb42-3">    abs_feature_importance <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> task <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> feature_relevance <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb42-4">      (<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> feature_relevance <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|</span> participant),</span>
+<span id="cb42-5">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> df_long</span>
+<span id="cb42-6">  )</span>
+<span id="cb42-7">)</span></code></pre></div></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Error : number of observations (=868) &lt;= number of random effects (=868) for term (1 + feature_relevance | participant); the random-effects parameters and the residual variance (or scale parameter) are probably unidentifiable</code></pre>
+</div>
+</div>
+<p>As it turns out, however, in this case we do not have enough data to produce a meaningful model with random slopes. This is, again, because we only produce two ratings per participant.</p>
 
 
 
  ]]></description>
-  <category>news</category>
   <category>code</category>
   <category>analysis</category>
-  <guid>https://your-website-url.example.com/posts/new-post/</guid>
-  <pubDate>Wed, 28 Jan 2026 05:00:00 GMT</pubDate>
-  <media:content url="https://your-website-url.example.com/posts/new-post/image.png" medium="image" type="image/png" height="96" width="144"/>
-</item>
-<item>
-  <title>Welcome To My Blog</title>
-  <dc:creator>Tristan O&#39;Malley</dc:creator>
-  <link>https://your-website-url.example.com/posts/welcome/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>This is the first post in a Quarto blog. Welcome!</p>
-<p><img src="https://your-website-url.example.com/posts/welcome/thumbnail.jpg" class="img-fluid"></p>
-<p>Since this post doesn’t specify an explicit <code>image</code>, the first image in the post will be used in the listing page of posts.</p>
-
-
-
- ]]></description>
-  <category>news</category>
-  <guid>https://your-website-url.example.com/posts/welcome/</guid>
-  <pubDate>Sun, 25 Jan 2026 05:00:00 GMT</pubDate>
+  <guid>https://your-website-url.example.com/posts/Project_Post/</guid>
+  <pubDate>Sun, 10 May 2026 04:00:00 GMT</pubDate>
+  <media:content url="https://your-website-url.example.com/posts/Project_Post/image.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>

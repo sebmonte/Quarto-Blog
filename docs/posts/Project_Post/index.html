@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sebastian Montesinos">
+<meta name="dcterms.date" content="2026-05-10">
+
+<title>Final Project - MLM Example – Quarto Blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Quarto Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com"> <i class="bi bi-twitter" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Final Project - MLM Example</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">code</div>
+                <div class="quarto-category">analysis</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Sebastian Montesinos </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">May 10, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+
+<p><strong>Final Project</strong>: Evaluating a Mixed Effects Model using Real Data</p>
+<p>In the following post, I will walk through the use of a mixed effects model for data in an experiment on category learning. I will start by explaining the experiment itself, before fitting a model. Finally, I will elaborate on the decision-making process in choosing this model, check assumptions, and see whether there are alternate modeling approaches one should use in this case.</p>
+<p>In the study under consideration, people observed the association between reptiles with differing features and their fertility. Their task was to figure out which of the two features was relevant to fertility, and which was irrelevant. The four stimuli used are pictured below:</p>
+<div class="grid quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<p><img src="G_C.png" class="img-fluid" style="width:100.0%"> <img src="G_F.png" class="img-fluid" style="width:100.0%"> <img src="Y_C.png" class="img-fluid" style="width:100.0%"> <img src="Y_F.png" class="img-fluid" style="width:100.0%"></p>
+</div>
+</div>
+</div>
+<p>As you can see, we had two features each with two directions: webbed feet or curved feet, and red or green coloring. When a feature was relevant, one of the directions would be associated with less fertility, the other with more fertility. However, this association was probabilistic: We would draw how fertile a given reptile was on each trial from a normal distribution. The purpose of this was to create noise, such that the irrelevant feature had some association with fertility even though it was not part of the data-generating process.</p>
+<p>The key question of our study was as follows: Do participants who are prompted to accommodate observations (i.e., explain them after the fact) and those who are prompted to predict observations (i.e., generate predictions before observations are made) differ in what they learn about these stimuli?&nbsp;</p>
+<p>In the learning by predicting condition, participants learned by seeing one reptile at a time during training, and then estimated how fertile it is (the outcome variable). After each training trial, they received feedback in the form of how fertile it actually was. In the learning by accommodating condition, participants learned by seeing both the imaginary reptile and how fertile it is, and provided a free response about why it was that fertile. The exact trial order for training was yoked between participants in each condition, in that every unique order of training trials is assigned once to a participant in each condition.</p>
+<p>In order to evaluate the differences between these conditions, we used the following measure:</p>
+<ol type="1">
+<li>Feature-importance ratings: The ratings of importance that participants assign to each feature. These are captured by a series of questions to participants: a) whether a feature is relevant, b) which value of that feature was positively relevant to fertility, and c) how strongly relevant it was. These are converted to a -7 to 7 scale, where 0 represents that the feature made no difference to the outcome, -7 represents that the feature value made a (strong) negative difference to the outcome, and 7 represents that the feature value made a (strong) positive difference to the outcome</li>
+</ol>
+<p>We ended up using two measures of feature importance. The first was the measure above from -7 to 7, whereas the second was one that captured the <em>absolute value</em> of feature importance. The theoretical reason for this is that we suspected there were two ways in which accommodators might differ: first, they might overfit in that they systematically get the direction of the irrelevant feature right (overfitting and latching onto noise), or perhaps they just inflate the importance of the irrelevant feature, <em>irrespective</em> of whether they picked up on the noise. The former measure is captured by the feature importance ratings, the latter by their absolute value.</p>
+<p>This brings us to the topic of what sort of model we ought to use to evaluate differences between participants. Generally, we were interested in whether there were main effects or interactions involving condition. As I mentioned, were especially interested in whether accommodators assign higher importance scores to irrelevant features than predictors.</p>
+<p>What sort of model should we use to evaluate this data? One option would be to use lm() in r in order to evaluate feature importance scores as a function of condition and task relevance. However, lm() and other traditional statistical tests make a few key assumptions:</p>
+<ol type="1">
+<li><p>Linearity: the relationship between the predictor/outcome can be modeled using a straight line</p></li>
+<li><p><strong>Independence of observations</strong>: the probability of a data point taking on a specific value is independent of the values taken by all other data points (Singman &amp; Kellen, 2019).&nbsp;</p></li>
+<li><p>Homoscedasticity: The residuals have the same variance across levels of the independent variables</p></li>
+<li><p>Normality of residuals: the residuals follow a normal distribution</p></li>
+</ol>
+<p>I have highlighted the second assumption for an important reason. Note that in this study, this assumption is violated before we even look at the data: we know that the probability of the data taking on a value is not independent from all other values, because the same person will make multiple judgments in this study. They provide two feature importance ratings, one for each stimulus.</p>
+<p>Why is this a problem? We know that measurements taken from the same person are likely to be correlated (Singman &amp; Kellen, 2019). For instance, maybe one person has a generally more conservative baseline for saying something matters, and so they will rate all features as much less important than someone else, irrespective of their actual relevance. What do we do in these situations?</p>
+<p>In this tutorial, we will examine the use of linear mixed effects models as a solution to this problem. These models capture two kinds of effects: first, fixed effects, which represent the population-level effect of predictors (these are the main effects or interactions we are used to getting with regular regression). Second, random effects, which are sources of variability across groups within the experiment. In our case the groups are just different participants.</p>
+<p>Let’s begin by loading in the cleaned data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)  <span class="co"># For reading our CSV</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.1     ✔ stringr   1.5.2
+✔ ggplot2   4.0.0     ✔ tibble    3.3.0
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.1.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)       <span class="co"># For random effects models</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'lme4' was built under R version 4.5.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: Matrix
+
+Attaching package: 'Matrix'
+
+The following objects are masked from 'package:tidyr':
+
+    expand, pack, unpack</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(emmeans)    <span class="co"># For pairwise comparisons </span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Welcome to emmeans.
+Caution: You lose important information if you filter this package's results.
+See '? untidy'</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmerTest)   <span class="co"># For a nice summary for lme4</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'lmerTest' was built under R version 4.5.2</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'lmerTest'
+
+The following object is masked from 'package:lme4':
+
+    lmer
+
+The following object is masked from 'package:stats':
+
+    step</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Let's load in the cleaned data</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>df_long <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'/Users/sm6511/Quarto Blog/data/df_long_for_R.csv'</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">task =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(task), <span class="at">ref =</span> <span class="st">"predict"</span>),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">feature_relevance =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(feature_relevance), <span class="at">ref =</span> <span class="st">"irrelevant"</span>),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">feature_dimension =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(feature_dimension), <span class="at">ref =</span> <span class="st">"feet"</span>),</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">color_high =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(color_high), <span class="at">ref =</span> <span class="st">"Y"</span>),</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">feet_high =</span> <span class="fu">relevel</span>(<span class="fu">factor</span>(feet_high), <span class="at">ref =</span> <span class="st">"C"</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="co">#Here I set reference levels for the statistical tests to be used later on.</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 868 Columns: 12
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (8): task, relevant_dim, irrelevant_dim, color_high, feet_high, feet_dis...
+dbl (4): participant, feature_importance, reported_relevant, abs_feature_imp...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<p>In the traditional linear model discussed earlier-which we could implement with lm()-there is a single intercept (β0) that represents the grand mean for all participants. However, a linear mixed model allows us to specify a random-intercepts model, in which each individual is allowed to have their own unique baseline effect. What this means, practically, is that if participants have the sort of idiosyncrasies described earlier, the model will capture such idiosyncrasies.</p>
+<p>Let’s fit a model like this using lmer() from lme4. We will start by fitting a model on the regular feature importance ratings:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(feature_importance <span class="sc">~</span> task <span class="sc">*</span> feature_relevance <span class="sc">+</span> </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                (<span class="dv">1</span><span class="sc">|</span>participant), <span class="at">data =</span> df_long)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>boundary (singular) fit: see help('isSingular')</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+lmerModLmerTest]
+Formula: feature_importance ~ task * feature_relevance + (1 | participant)
+   Data: df_long
+
+REML criterion at convergence: 4554.5
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.2173 -0.6088 -0.2184  0.8734  1.7731 
+
+Random effects:
+ Groups      Name        Variance Std.Dev.
+ participant (Intercept)  0.00    0.000   
+ Residual                11.12    3.335   
+Number of obs: 868, groups:  participant, 434
+
+Fixed effects:
+                                           Estimate Std. Error        df
+(Intercept)                                 1.08756    0.22636 864.00000
+taskaccommodate                             0.02304    0.32012 864.00000
+feature_relevancerelevant                   1.84793    0.32012 864.00000
+taskaccommodate:feature_relevancerelevant   0.76959    0.45272 864.00000
+                                          t value Pr(&gt;|t|)    
+(Intercept)                                 4.805 1.83e-06 ***
+taskaccommodate                             0.072   0.9426    
+feature_relevancerelevant                   5.773 1.09e-08 ***
+taskaccommodate:feature_relevancerelevant   1.700   0.0895 .  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) tskccm ftr_rl
+taskaccmmdt -0.707              
+ftr_rlvncrl -0.707  0.500       
+tskccmmdt:_  0.500 -0.707 -0.707
+optimizer (nloptwrap) convergence code: 0 (OK)
+boundary (singular) fit: see help('isSingular')</code></pre>
+</div>
+</div>
+<p>Note that we set the reference level for feature_relevance to ‘irrelevant’, and so the simple effect of ‘taskaccommodate’ above tells us whether accommodators assign higher importance scores to irrelevant features. As it turns out, they do not do so with this measure! Before looking at the model that uses absolute values, let’s evaluate our use of a model with random intercepts here. The difference between this model and a model with lm() involves the term (1|participant). Generally, this term allows each group to have its own intercept. In our case, a group is just a single participant.</p>
+<p>However, there is a problem with our use of lmer() in this case: if we check the output, we got a warning: ‘boundary (singular) fit: see help(’isSingular’)’. When we check the help page on this warning, it tells us the following: “some ‘dimensions’ of the variance-covariance matrix have been estimated as exactly zero’. We can see that in our case, the variance and standard deviation of the random effect are at zero. Why is this? One reason could be that we only have two observations per participant, which is not enough for the model to find participant differences. The between-subjects effects of feature relevance are much stronger. Alternatively, perhaps our introduction of signs (negative values) cancels out any grouping effect of participants. More on this later. First, we confirm the problem with this model by running isSingular and looking at the correlation values for the intercept term.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">isSingular</span>(model1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">VarCorr</span>(model1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Groups      Name        Std.Dev.
+ participant (Intercept) 0.0000  
+ Residual                3.3345  </code></pre>
+</div>
+</div>
+<p>We can see from these outputs that the grouping did not explain variance, and we have some leftover unexplained variation in our model. We can go a bit further to check this by looking at the residuals for importance ratings after accounting for task and relevance. In other words, if we subtract the mean rating within each task x feature relevance condition, we can see how much is left over that is not explained by condition differences, and so could be the result of differences in each participant’s mean tendencies. If there was a strong baseline difference between participants that matters here, then you might expect people who rate irrelevant features more highly to also rate relevant features more highly. Put more simply, do participants who give higher ratings for irrelevant features also tend to give higher ratings in the other condition? This would suggest unexplained variance. Let’s see if that’s the case:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>df_resid <span class="ot">&lt;-</span> df_long <span class="sc">%&gt;%</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(task, feature_relevance) <span class="sc">%&gt;%</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">residuals =</span> feature_importance <span class="sc">-</span> <span class="fu">mean</span>(feature_importance)) <span class="sc">%&gt;%</span> <span class="co">#get residuals</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(participant, task, feature_relevance, residuals) <span class="sc">%&gt;%</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">id_cols =</span> <span class="fu">c</span>(participant, task),</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> feature_relevance,</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> residuals</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_resid, <span class="fu">aes</span>(<span class="at">x =</span> irrelevant, <span class="at">y =</span> relevant)) <span class="sc">+</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span> <span class="co">#add a line plotting the relationship</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Residuals across ratings of irrelevant and relevant exemplars"</span>,</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Irrelevant rating residuals"</span>,</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Relevant rating residuals"</span></span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<pre><code>What we can see is there’s no real correlation here between the residuals, so some participants are not prone to assigning higher importance scores than others. Therefore, there just isn’t enough structure in the data for the random intercepts to matter. This could be because there really aren’t differences in baseline tendencies for participants in these paradigms, or that we don’t have enough data to capture them. However, it was still a good idea to start with this model. Theoretically, the baseline between participants could have indeed mattered. In fact, we can generate a scenario where it would matter. Let’s suppose participants rated many more irrelevant and relevant items, and lets simulate some baseline tendency differences between participants:</code></pre>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="do">###First we are going to copy each row, to pretend that participants saw 10x more stimuli</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>df_expanded <span class="ot">&lt;-</span> df_long <span class="sc">%&gt;%</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">n</span>(), <span class="at">each =</span> <span class="dv">10</span>)) </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co">#Now we are 'simulating' different baseline tendencies per participant. So what we have is a vector with some preset baseline tendency for each participant</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>participant_offsets <span class="ot">&lt;-</span><span class="fu">rnorm</span>(</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">n_distinct</span>(df_expanded<span class="sc">$</span>participant), <span class="co">#size of vector = amount of participants</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean =</span> <span class="dv">0</span>,</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">sd =</span> <span class="dv">2</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="co">#Now we go back to df_expanded, and we are adding that offset to their data.</span></span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>df_expanded <span class="ot">&lt;-</span> df_expanded <span class="sc">%&gt;%</span></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">pid =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(participant)),</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">feature_importance_sim =</span></span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>      feature_importance <span class="sc">+</span> participant_offsets[pid] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">n</span>(), <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a><span class="co">#This just refits the same model as before</span></span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>model_sim <span class="ot">&lt;-</span> <span class="fu">lmer</span>(</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>  feature_importance_sim <span class="sc">~</span> task <span class="sc">*</span> feature_relevance <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> participant),</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_expanded</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_sim)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+lmerModLmerTest]
+Formula: feature_importance_sim ~ task * feature_relevance + (1 | participant)
+   Data: df_expanded
+
+REML criterion at convergence: 42783.8
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.5921 -0.6573  0.0032  0.6715  3.9332 
+
+Random effects:
+ Groups      Name        Variance Std.Dev.
+ participant (Intercept) 8.614    2.935   
+ Residual                6.872    2.622   
+Number of obs: 8680, groups:  participant, 434
+
+Fixed effects:
+                                           Estimate Std. Error        df
+(Intercept)                               1.080e+00  2.070e-01 4.657e+02
+taskaccommodate                           1.443e-01  2.928e-01 4.657e+02
+feature_relevancerelevant                 1.858e+00  7.959e-02 8.244e+03
+taskaccommodate:feature_relevancerelevant 7.296e-01  1.125e-01 8.244e+03
+                                          t value Pr(&gt;|t|)    
+(Intercept)                                 5.215 2.78e-07 ***
+taskaccommodate                             0.493    0.622    
+feature_relevancerelevant                  23.349  &lt; 2e-16 ***
+taskaccommodate:feature_relevancerelevant   6.482 9.58e-11 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) tskccm ftr_rl
+taskaccmmdt -0.707              
+ftr_rlvncrl -0.192  0.136       
+tskccmmdt:_  0.136 -0.192 -0.707</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Now we can produce th same plot we did before and see whether there is a correlation.</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>df_resid <span class="ot">&lt;-</span> df_expanded <span class="sc">%&gt;%</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(task, feature_relevance) <span class="sc">%&gt;%</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">residuals =</span> feature_importance_sim <span class="sc">-</span> <span class="fu">mean</span>(feature_importance_sim)) <span class="sc">%&gt;%</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(participant, task, feature_relevance) <span class="sc">%&gt;%</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_residual =</span> <span class="fu">mean</span>(residuals),</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">id_cols =</span> <span class="fu">c</span>(participant, task),</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_from =</span> feature_relevance,</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_from =</span> mean_residual</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_resid, <span class="fu">aes</span>(<span class="at">x =</span> irrelevant, <span class="at">y =</span> relevant)) <span class="sc">+</span></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>) <span class="sc">+</span></span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Residuals across ratings of irrelevant and relevant exemplars (Simulated data)"</span>,</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Irrelevant rating residual"</span>,</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Relevant rating residual"</span></span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The above plot confirms what we <em>should</em> see given built-in baseline tendencies: there is some effect of grouping (by participant), wherein certain participants are more prone to assigning higher ratings to both features than others, even after we account for the effects of task and relevance.</p>
+<p>Now that we have established that our use of lmer() for feature importance scores was unnecessary, even if worth checking, let’s look at the absolute value of feature importance scores.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(abs_feature_importance <span class="sc">~</span> task <span class="sc">*</span> feature_relevance <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>participant), <span class="at">data =</span> df_long) </span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+lmerModLmerTest]
+Formula: abs_feature_importance ~ task * feature_relevance + (1 | participant)
+   Data: df_long
+
+REML criterion at convergence: 4113.7
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-1.7217 -0.9347  0.2130  0.8909  1.8227 
+
+Random effects:
+ Groups      Name        Variance Std.Dev.
+ participant (Intercept) 0.2841   0.533   
+ Residual                6.3973   2.529   
+Number of obs: 868, groups:  participant, 434
+
+Fixed effects:
+                                          Estimate Std. Error       df t value
+(Intercept)                                 2.0461     0.1755 862.4411  11.661
+taskaccommodate                             0.6037     0.2482 862.4411   2.433
+feature_relevancerelevant                   1.4793     0.2428 431.9993   6.092
+taskaccommodate:feature_relevancerelevant   0.2258     0.3434 431.9993   0.658
+                                          Pr(&gt;|t|)    
+(Intercept)                                &lt; 2e-16 ***
+taskaccommodate                             0.0152 *  
+feature_relevancerelevant                 2.47e-09 ***
+taskaccommodate:feature_relevancerelevant   0.5112    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) tskccm ftr_rl
+taskaccmmdt -0.707              
+ftr_rlvncrl -0.692  0.489       
+tskccmmdt:_  0.489 -0.692 -0.707</code></pre>
+</div>
+</div>
+<p>Notice how much our findings have changed! First, we no longer get the ‘Is Singular’ errors, indicating that random intercepts <em>did</em> make a difference here. In fact, though I will not produce another plot of the residuals, if we did, they would look similar to the simulated pattern. What does this tell us? When we look at whether certain people report higher importance scores generally, <em>without accounting for whether they got the direction right</em> there is an effect of grouping! This is important because, in fact, participants did not report a score form -7 to 7, they reported a score from 1-7. We transformed it to -7 to 7 to measure whether they got the direction right. In that sense, the truer measure of what they initially did shows a bias by participant.</p>
+<p>Next, even after accounting for this difference, we now do see a difference between predictors and accommodators, wherein accommodators assign higher importance scores to irrelevant features than predictors! However, we do not see an interaction, so it does not appear that the difference between the scores they assign to irrelevant v relevant features differs by condition. This suggests that we should investigate whether they also assign higher importance scores to relevant feature. To do this, we can use emmeans, which estimates the mean difference for each level of a picked variable. In this case, we look at mean task difference for each level of feature relevance:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">emmeans</span>(model2, <span class="sc">~</span> task <span class="sc">|</span> feature_relevance) <span class="sc">|&gt;</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pairs</span>(<span class="at">adjust =</span> <span class="st">"bonferroni"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>feature_relevance = irrelevant:
+ contrast              estimate    SE  df t.ratio p.value
+ predict - accommodate   -0.604 0.248 862  -2.433  0.0152
+
+feature_relevance = relevant:
+ contrast              estimate    SE  df t.ratio p.value
+ predict - accommodate   -0.829 0.248 862  -3.343  0.0009
+
+Degrees-of-freedom method: kenward-roger </code></pre>
+</div>
+</div>
+<p>We can confirm from the above that accommodators actually assign higher scores to both relevant and irrelevant features! We had predicted they would only do so for irrelevant features, so this is a useful result. It suggests that accommodators inflate how important they think features are generally, irrespective of relevance.</p>
+<p>We’ve now looked at two models and seen that in one case, clustering matters, and in the other case, it does not. There’s a nice metric that will let us evaluate this directly, the ‘Interclass Correlation Coefficient’ (ICC). This is a measure of how much of the <em>total variability</em> is due to the groups, where an ICC of 0 would mean there’s no effect of grouping. Based on what we saw above, we would expect this measure to be problematic for model1 (and perhaps have an ICC of 0) but show some non-zero number for model2.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(performance)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">icc</span>(model1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Can't compute random effect variances. Some variance components equal
+  zero. Your model may suffer from singularity (see `?lme4::isSingular`
+  and `?performance::check_singularity`).
+  Decrease the `tolerance` level to force the calculation of random effect
+  variances, or impose priors on your random effects parameters (using
+  packages like `brms` or `glmmTMB`).</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] NA</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">icc</span>(model2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># Intraclass Correlation Coefficient
+
+    Adjusted ICC: 0.043
+  Unadjusted ICC: 0.038</code></pre>
+</div>
+</div>
+<p>Our adjusted ICC for model 2 is .043, which is fairly low. So even though there is an effect of grouping here, it is not very strong.</p>
+<p>Finally, let’s do some diagnostics to evaluate whether some of the other assumptions relevant to mixed linear models hold with our data. check_model from the performance package is a nice way to run many of these at once.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>performance<span class="sc">::</span><span class="fu">check_model</span>(model2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="1344"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A few tests stand out. First, the posterior predictive check. Of the assumptions, this is the most concerning. What this check looks at is, after we fit the model, does the simulated data given the model match the the actual data? We learn something interesting here: it deviates, In particular, the real data is clearly bimodal. This actually may not be theoretically surprising, because we are again using a likert scale of importance ratings to collect data. Much of the data is probably clustered towards the low and high ends, which may suggest that people either do not report at all (and are around 0) or do report, and report fairly high values.</p>
+<p>Second, the residuals are not entirely normal. In particular, we see a sort of s-shape, and this is what we might expected given that our outcome is bounded from 0-7. These two deviations from what we’d assume with our mixed model are likely related, in that the s-shaped residuals could be a consequence of the bimodal data.</p>
+<p>Since we found these departures from the assumptions of linear models, it might be useful to think about what alternate tests we could do that better match the data. For instance, perhaps we should consider an ordinal model, on the reasoning that we have ranked responses (from 0 to 7) that we can’t treat as continuous. Alternatively, perhaps we should first model whether or not people think a feature is relevant <em>at all</em> and then simply form a model for the participants who <em>do</em> rate a feature as relevant.</p>
+<p>One possibility for the latter idea is a ‘hurdle’ model which asks two questions: first, what is the probability of getting 0 - in our case, do our predictors make participants more likely to ‘opt in’ and believe a feature matters to begin with. Second, <em>for those participants who opt in</em>, do our predictors make a difference to their ratings.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co">#We are going to first use a generalized linear model. We are loading this in now because for the first step, our outcome isn't going to be continuous. We are going to ask 'does a participant say something is important at all'</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>df_long <span class="ot">&lt;-</span> df_long <span class="sc">|&gt;</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">is_important =</span> abs_feature_importance <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>model_hurdle1 <span class="ot">&lt;-</span> <span class="fu">glmer</span>(</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  is_important <span class="sc">~</span> task <span class="sc">*</span> feature_relevance <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> participant),</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">family =</span> binomial, </span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_long</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>) <span class="co">#again, this model is for the binary outcome of whether a feature is said to matter to begin with</span></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_hurdle1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Generalized linear mixed model fit by maximum likelihood (Laplace
+  Approximation) [glmerMod]
+ Family: binomial  ( logit )
+Formula: is_important ~ task * feature_relevance + (1 | participant)
+   Data: df_long
+
+      AIC       BIC    logLik -2*log(L)  df.resid 
+   1122.2    1146.0    -556.1    1112.2       863 
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-1.8493 -1.0893  0.5407  0.8756  1.0557 
+
+Random effects:
+ Groups      Name        Variance Std.Dev.
+ participant (Intercept) 0.04835  0.2199  
+Number of obs: 868, groups:  participant, 434
+
+Fixed effects:
+                                          Estimate Std. Error z value Pr(&gt;|z|)
+(Intercept)                                -0.1027     0.1376  -0.746 0.455559
+taskaccommodate                             0.3370     0.1956   1.723 0.084927
+feature_relevancerelevant                   0.7076     0.1997   3.543 0.000396
+taskaccommodate:feature_relevancerelevant   0.3036     0.2909   1.044 0.296621
+                                             
+(Intercept)                                  
+taskaccommodate                           .  
+feature_relevancerelevant                 ***
+taskaccommodate:feature_relevancerelevant    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) tskccm ftr_rl
+taskaccmmdt -0.705              
+ftr_rlvncrl -0.685  0.489       
+tskccmmdt:_  0.466 -0.659 -0.669</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>df_positive <span class="ot">&lt;-</span> df_long <span class="sc">|&gt;</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(abs_feature_importance <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="co">#now we are going to look only at participants who 'opted-in' to saying a feature mattered. Here, we can switch back to using a linear model.</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>model_hurdle2 <span class="ot">&lt;-</span> <span class="fu">lmer</span>(</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  abs_feature_importance <span class="sc">~</span> task <span class="sc">*</span> feature_relevance <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> participant),</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> df_positive</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model_hurdle2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+lmerModLmerTest]
+Formula: abs_feature_importance ~ task * feature_relevance + (1 | participant)
+   Data: df_positive
+
+REML criterion at convergence: 1783.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.4533 -0.4949  0.2667  0.6031  1.9326 
+
+Random effects:
+ Groups      Name        Variance Std.Dev.
+ participant (Intercept) 0.1268   0.3561  
+ Residual                1.5301   1.2370  
+Number of obs: 532, groups:  participant, 370
+
+Fixed effects:
+                                          Estimate Std. Error       df t value
+(Intercept)                                 4.3087     0.1267 527.9744  34.005
+taskaccommodate                             0.4404     0.1724 527.9733   2.555
+feature_relevancerelevant                   1.1528     0.1634 340.6387   7.055
+taskaccommodate:feature_relevancerelevant  -0.2762     0.2214 319.3298  -1.247
+                                          Pr(&gt;|t|)    
+(Intercept)                                &lt; 2e-16 ***
+taskaccommodate                             0.0109 *  
+feature_relevancerelevant                 9.68e-12 ***
+taskaccommodate:feature_relevancerelevant   0.2132    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) tskccm ftr_rl
+taskaccmmdt -0.735              
+ftr_rlvncrl -0.747  0.549       
+tskccmmdt:_  0.551 -0.748 -0.738</code></pre>
+</div>
+</div>
+<p>What we find is interesting: we find only marginally significant evidence that accommodators are more likely to believe that irrelevant features matter <em>to begin with</em>, but we find significant evidence that accommodators believe irrelevant features matter more than predictors, for those participants who say the irrelevant feature matters!</p>
+<p>In summary, we first found that using lmer() is useful when there is a theoretical reason to expect that grouping - such as variation as a result of participant idiosyncrasies - might affect the data you collect. Second, we investigated why we found that no variability was explained using random intercepts when we transformed compressed data, but not when investigating a model based on the original data. Third, we checked our assumptions for using a linear mixed model generally, and found that a couple were violated. We discussed some approaches to deal with this.</p>
+<p>Before ending, I want to briefly consider the other part of random effects: random slopes. Should we have used random slopes in addition to random intercepts in this model? First, we should consider what this means. In this case, we might be interested in whether participants differ in how strongly they distinguish relevant and irrelevant features on <em>an individual basis</em>. Again, this is different from a fixed effect wherein we see whether this differs as a function of task. Instead, we just want to know whether, when we account for those effects, there is left over variability that can be captured by differences in participants’ sensitivity to relevance. Hence, there is a theoretical reason to include random slopes when analyzing this data.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">try</span>(</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lmer</span>(</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    abs_feature_importance <span class="sc">~</span> task <span class="sc">*</span> feature_relevance <span class="sc">+</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>      (<span class="dv">1</span> <span class="sc">+</span> feature_relevance <span class="sc">|</span> participant),</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> df_long</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Error : number of observations (=868) &lt;= number of random effects (=868) for term (1 + feature_relevance | participant); the random-effects parameters and the residual variance (or scale parameter) are probably unidentifiable</code></pre>
+</div>
+</div>
+<p>As it turns out, however, in this case we do not have enough data to produce a meaningful model with random slopes. This is, again, because we only produce two ratings per participant.</p>
+
+
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/your-website-url\.example\.com");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
