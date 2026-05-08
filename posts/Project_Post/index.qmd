@@ -120,7 +120,7 @@ library(dplyr)
 
 ###First we are going to copy each row, to pretend that participants saw 10x more stimuli
 df_expanded <- df_long %>%
-  slice(rep(1:n(), each = 10)) 
+  dplyr::slice(rep(1:n(), each = 10))
 
 #Now we are 'simulating' different baseline tendencies per participant. So what we have is a vector with some preset baseline tendency for each participant
 set.seed(1)
@@ -245,6 +245,16 @@ summary(model_hurdle2)
 
 What we find is interesting: we find only marginally significant evidence that accommodators are more likely to believe that irrelevant features matter *to begin with*, but we find significant evidence that accommodators believe irrelevant features matter more than predictors, for those participants who say the irrelevant feature matters!
 
+Now that we've switched our approach to this two-step model, it is worth checking whether our linear model assumptions are now less violated. So let's run the performance package again:
+
+```{r}
+#| fig-width: 14
+#| fig-height: 10
+performance::check_model(model_hurdle2)
+```
+
+We can now see that our new model does a lot better! first, the posterior predictive check is now aligned, and we aren't dealing with a mismatch between a bimodal distribution and a normal distribution. There is still an s-shaped pattern in terms of the residuals, but it looks better than before. There are still some issues: for instance, there appears to be a cluster with some influential observations, but we could dig into this more deeply by excluding them and rerunning the model.
+
 Before ending, I want to briefly consider the other part of random effects: random slopes. Should we have used random slopes in addition to random intercepts in this model? First, we should consider what this means. In this case, we might be interested in whether participants differ in how strongly they distinguish relevant and irrelevant features on *an individual basis*. Again, this is different from a fixed effect wherein we see whether this differs as a function of task. Instead, we just want to know whether, when we account for those effects, there is left over variability that can be captured by differences in participants' sensitivity to relevance. Hence, there is a theoretical reason to include random slopes when analyzing this data.
 
 ```{r}
@@ -262,3 +272,15 @@ As it turns out, however, in this case we do not have enough data to produce a m
 **Summary**
 
 We first found that using lmer() is useful when there is a theoretical reason to expect that a grouping effect could affect the data you collect. Second, we investigated why we found that no variability was explained using random intercepts when we transformed our Likert data, but not when investigating a model based on the original values of the data. Third, we checked our assumptions for using a linear mixed model generally, and found that a couple were violated. We discussed some approaches to deal with this.
+
+As a final exercise, let's go through some of the output in the model we decided on and discuss writing up the results.
+
+To examine whether accommodators and predictors differed in how they assign importance scores to relevant and irrelevant features, we used a two-step hurdle model, first examining whether accommodators were more likely than predictors to say an irrelevant feature mattered to begin with, and then examining, amongst participants who thought irrelevant features mattered, whether accommodators were likely to inflate the importance of irrelevant features.
+
+For the first step, we fit a mixed-effects logistic regression predicting whether participants said a feature mattered at all (assigned a non-zero importance score) with task, feature relevance, and their interaction as predictors. In line with expectations, we found that participants were more likely to endorse relevant features as important than irrelevant features (b =.71, SE = .2, z = 3.54, p \<.001). We found only marginally significant evidence that accommodators were more likely than predictors to report that irrelevant features mattered (b = .34, SE = .20, z = 1.72, p = .085). The interaction between task and feature relevance was not significant (b = .30, SE = .29, z = 1.04, p = .297), indicating that accommodators do not differ in selectively distinguishing irrelevant features from relevant features.
+
+For the second step, we fit a linear mixed model predicting feature importance scores from task (predict v accommodate), feature relevance (relevant v irrelevant), and their interaction as predictors. The variance from the random intercept was 0.13, indicating some small effect of baseline importance ratings from participants.
+
+In line with our predictions, we found that relevant features were rated as more relevant than irrelevant features (b = 1.15, SE = .16, t(340.64) = 7.06, p \<. 001). We also found, in line with our predictions, that accommodators assign higher importance scores to irrelevant features than predictors (b = .44, SE = .17, t(527.87) = 2.56, p = .11). We did not find a significant interaction between task and feature relevance (b = -.28, SE = .22, t(319.33) = -1.25, p = .213), indicating that accommodators are not more likely to inflate irrelevant features than relevant features, relative to predictors.
+
+Overall, our results suggest that accommodators are more likely to *inflate* the importance of an irrelevant feature once they think that it matters. However, there is only weak evidence that they are more likely to *believe* irrelevant features, and no evidence that this is a selective effect only for irrelevant features. Instead, it appears that they inflate the importance of relevant and irrelevant features generally.
